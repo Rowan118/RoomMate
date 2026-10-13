@@ -1,15 +1,15 @@
-const form = document.getElementById("submit");
+const submitInput = document.getElementById("submit");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const error = document.getElementById("error");
 
-form.addEventListener("click", function() {
+submitInput.addEventListener("click", function() {
 
     //takes in the input from the html page
     error.innerText = "";
 
-    const email = email.value;
-    const password = password.value;
+    const email = emailInput.value;
+    const password = passwordInput.value;
 
     if (!email.includes("@wsu.edu")) {
         error.innerText = "Not a valid WSU email";
@@ -28,19 +28,19 @@ form.addEventListener("click", function() {
     }
 
     //tests for password
-    const has_lowercase = /[a-z]/.test(password);
-    const has_uppercase = /[A-Z]/.test(password);
-    const has_number = /[0-9]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
 
-    if (!has_lowercase) {
+    if (!hasLowercase) {
         error.innerText = "Password must contain at least one lowercase letter";
         return false;
     }
-    if (!has_uppercase) {
+    if (!hasUppercase) {
         error.innerText = "Password must contain at least one capital letter";
         return false;
     }
-    if (!has_number) {
+    if (!hasNumber) {
         error.innerText = "Password must contain at least one number";
         return false;
     }
