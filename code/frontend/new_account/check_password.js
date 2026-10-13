@@ -1,15 +1,15 @@
-const submitBtn = document.getElementById("submit");
+const form = document.getElementById("submit");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const error = document.getElementById("error");
 
-submitBtn.addEventListener("click", function() {
+form.addEventListener("click", function() {
 
     //takes in the input from the html page
     error.innerText = "";
 
-    const email = emailInput.value;
-    const password = passwordInput.value;
+    const email = email.value;
+    const password = password.value;
 
     if (!email.includes("@wsu.edu")) {
         error.innerText = "Not a valid WSU email";
