@@ -7,22 +7,24 @@
   </head>
   <body>
     <p>Enter your current WSU email and a secure password to create an account</p>
-    <form action="/submit">
-    <label for="email">Email:</label>
-    <input type="email" name="emailaddress"
-    value = "student.name@wsu.edu">
-    <br>
+    
+    <div id="loginForm">
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" placeholder="example.email@wsu.edu"><br><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" placeholder="Securepassword3"><br><br>
+        <button type="button" id="submit">Log In</button>
+    </div>
 
-    <label for="password">Password:</label>
-    <input type="password" name="password" 
-    value = "password123">
-    <br>
-    <input type="submit">
-    </form>
-    <p>Already have an account? Click
-    <a href= "https://www.merriam-webster.com/dictionary/placeholder"> 
-    here!
-    </a>
+    <p id="error" style="color: red;"></p>
+
+    <script src="check_password.js"></script>
+
+    <p>Already have an account? Click 
+      <a href="https://www.merriam-webster.com/dictionary/placeholder">
+        here!
+      </a>
     </p>
+
   </body>
 </html>
