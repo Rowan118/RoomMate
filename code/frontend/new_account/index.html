@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <!-- account creation for RoomMate -->
+  <head>
+    <meta charset="utf-8">
+    <title>new_account_creation</title>
+  </head>
+  <body>
+    <h1>Account creation</h1>
+    <p>Enter your current WSU email and a secure password to create an account</p>
+    
+    <div id="loginForm">
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" placeholder="example.email@wsu.edu"><br><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" placeholder="Securepassword3"><br><br>
+        <button type="button" id="submit">Log In</button>
+    </div>
+
+    <!-- future: check for valid RA email -->
+
+    <p id="error" style="color: red;"></p>
+
+    <script src="check_password.js"></script>
+
+    <p>Already have an account? Click 
+      <a href="https://www.merriam-webster.com/dictionary/placeholder">
+        here!
+      </a>
+    </p>
+
+  </body>
+</html>
