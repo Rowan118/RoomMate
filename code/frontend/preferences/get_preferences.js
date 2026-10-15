@@ -8,7 +8,7 @@ submitInput.addEventListener("click", function() {
     
   //future: implement processing of information for js and backend
 
-    window.location.href = "https://rowan118.github.io/RoomMate/code/frontend/submission.html";
+    window.location.href = "submission.html";
     //redirection here means we don't need this to run anymore
     return false;
 

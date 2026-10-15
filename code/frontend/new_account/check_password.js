@@ -54,7 +54,7 @@ submitInput.addEventListener("click", async function () {
             return false;
         }
 
-        window.location.href = "https://rowan118.github.io/RoomMate/code/frontend/homepage.html";
+        window.location.href = "homepage.html";
     } catch (err) {
         error.innerText = "Could not reach the server. Is the backend running?";
     }
