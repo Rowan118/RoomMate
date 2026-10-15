@@ -1,6 +1,7 @@
 const submitInput = document.getElementById("submit");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
+// Currently unused and buggy. Uncomment and fix later.
+// const emailInput = document.getElementById("email");
+// const passwordInput = document.getElementById("password");
 const error = document.getElementById("error");
 
 submitInput.addEventListener("click", function() {

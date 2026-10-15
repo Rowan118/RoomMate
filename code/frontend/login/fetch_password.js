@@ -2,14 +2,13 @@ const submitInput = document.getElementById("submit");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const error = document.getElementById("error");
+const API_BASE = "http://localhost:8080";
 
-submitInput.addEventListener("click", function() {
-    //prevents page from reloading and not displaying errors
+submitInput.addEventListener("click", async function () {
 
-    //takes in the input from the html page
     error.innerText = "";
 
-    const email = emailInput.value;
+    const email = emailInput.value.trim();
     const password = passwordInput.value;
 
     //keeps basic checks, since there's no point in querying for an invalid password
@@ -29,12 +28,23 @@ submitInput.addEventListener("click", function() {
         return false;
     }
 
-    //for backend -- take email and password input, return something indicating whether passwords match
+    try {
+        const response = await fetch(`${API_BASE}/api/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
 
-    //to do for me -- implement url redirection for backend return 
+        if (!response.ok) {
+            error.innerText = "Invalid email or password";
+            return false;
+        }
 
-    window.location.href = "https://rowan118.github.io/RoomMate/code/frontend/homepage.html";
-    //redirection here means we don't need this to run anymore
+        window.location.href = "https://rowan118.github.io/RoomMate/code/frontend/homepage.html";
+    } catch (err) {
+        error.innerText = "Could not reach the server. Is the backend running?";
+    }
+
     return false;
-
 });
