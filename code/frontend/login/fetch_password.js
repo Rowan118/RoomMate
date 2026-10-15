@@ -33,7 +33,7 @@ submitInput.addEventListener("click", function() {
 
     //to do for me -- implement url redirection for backend return 
 
-    window.location.href = "https://www.merriam-webster.com/dictionary/placeholder";
+    window.location.href = "https://rowan118.github.io/RoomMate/code/frontend/homepage.html";
     //redirection here means we don't need this to run anymore
     return false;
 
