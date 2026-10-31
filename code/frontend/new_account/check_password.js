@@ -1,4 +1,6 @@
+//some of these are not arbitrary names due to the type of data being used. PLEASE do not refactor them
 const submitInput = document.getElementById("submit");
+const accountType = document.getElementById("accountType");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const error = document.getElementById("error");
@@ -11,13 +13,19 @@ submitInput.addEventListener("click", async function () {
 
     const email = emailInput.value.trim();
     const password = passwordInput.value;
+    const index = accountType.selectedIndex;
+    const account = accountType.options[index].value;
 
     if (!email.includes("@wsu.edu")) {
         error.innerText = "Not a valid WSU email";
         return false;
     }
 
-    //assume implementation of some form of validation here later on
+    //TODO: email verification for RA and student accounts
+    //RA will be a list of valid emails for making RA accounts (since the school likely tracks that anyway)
+    //students will receive an email with an OTP (probably a psuedorandom number)
+    //email will also be used when we send the results
+
     if (password.length < 10) {
         error.innerText = "Password must be at least 10 characters long";
         return false;
@@ -40,6 +48,17 @@ submitInput.addEventListener("click", async function () {
         error.innerText = "Password must contain at least one number";
         return false;
     }
+
+    if (account.includes("RA")) {
+        //this is just an example of how this check might work for RAs
+        const testEmail = "bob.smith@wsu.edu";
+        if (!(email === testEmail)) {
+            error.innerText = "Cannot create an RA account with this email"
+        }
+    }
+
+    //BACKEND: attempt to fetch email list of RA accounts (just create a couple random emails for demo)
+    //if possible, return the specific message that its not a valid email for RAs
 
     try {
         const response = await fetch(`${API_BASE}/api/register`, {
