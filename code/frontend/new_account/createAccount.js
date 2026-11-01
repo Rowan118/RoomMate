@@ -50,7 +50,8 @@ submitInput.addEventListener("click", async function () {
     }
 
     if (account.includes("RA")) {
-        //this is just an example of how this check might work for RAs
+        //function for testing frontend functionality
+        //remove when backend functionality is implemented
         const testEmail = "bob.smith@wsu.edu";
         if (!(email === testEmail)) {
             error.innerText = "Cannot create an RA account with this email"

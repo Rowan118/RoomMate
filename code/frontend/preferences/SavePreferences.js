@@ -14,8 +14,6 @@ const error = document.getElementById("error");
 const API_BASE = "http://localhost:8080";
 
 submitInput.addEventListener("click", async function() {
-    
-  //future: implement processing of information for js and backend
 
   error.innerText = "";
 
@@ -30,6 +28,54 @@ submitInput.addEventListener("click", async function() {
   const wakeTime = wakeTimeInput.value;
   const sleepTime = sleepTimeInput.value;
   const alcoholPref = alcoholPrefInput.value;
+
+  //basic checks to ensure information isn't contradicting
+  //helps simplify the matching process in the backend
+
+  // -- Reference for dorm rules: --
+  // Regents = female only
+  // Stimson = male only
+  // Rogers = double only
+  // McEachern = single only, must be 19 or older
+  // McCrosky = gender inclusive only
+  // Streit Perham/Orton = co-ed (no special rules)
+
+  if (dormPref === "Regents" && gender === "male") {
+    error.innerText = "Regents is a residence hall for females";
+    return false;
+  }
+
+  if (dormPref === "Stimson" && gender === "female") {
+    error.innerText = "Stimson is a residence hall for males";
+    return false;
+  }
+
+  if (dormPref === "Rogers" && roomType === "single") {
+    error.innerText = "Rogers hall only has double rooms";
+    return false;
+  }
+
+  if (dormPref === "McEachern" && roomType === "double") {
+    error.innerText = "McEachern hall only has single rooms";
+    return false;
+  }
+
+  if (dormPref === "McEachern" && age === "under 19") {
+    error.innerText = "Must be 19 or older to live in McEachern hall";
+    return false;
+  }
+
+  if (dormPref === "McCrosky" && sameGenderPref === yes) {
+    error.innerText = "Pick a different hall for rooming with the same gender";
+    return false;
+  }
+
+  if (age === "under 21" && ( alcoholPref === "yes" || alcoholPref === "no" )) {
+    error.innerText = "Alcohol preference must be selected as 'under 21'";
+    return false;
+  }
+
+  //moves information to backend once processed
 
   try {
         const response = await fetch(`${API_BASE}/api/addPreferences`, {

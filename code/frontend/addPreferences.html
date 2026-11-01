@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-  <!-- for adding or modifying preferences -->
+  <!-- for adding preferences -->
   <head>
     <meta charset="utf-8">
     <title>account_homepage</title>
@@ -8,8 +8,6 @@
   <body>
 
     <h1>Room/Roommate preferences</h1>
-
-    <!-- future: if preferences, already submitted, show what has been submitted -->
 
     <div id="preference form">
       <label for="firstName">First name:</label><br>
@@ -22,13 +20,13 @@
       <label for="dormPref">Preferred residence hall:</label><br>
       <select name="dormPref" id="dormPref" required>
         <option value="none"></option> 
-        <option value="regents">Regents</option> 
-        <option value="stimson">Stimson</option>
-        <option value="rogers">Rogers</option>
-        <option value="mceachern">McEachern</option>
-        <option value="mccrosky">McCrosky</option>
-        <option value="streit">Streit Perham</option>
-        <option value="orton">Orton</option>
+        <option value="Regents">Regents</option> 
+        <option value="Stimson">Stimson</option>
+        <option value="Rogers">Rogers</option>
+        <option value="McEachern">McEachern</option>
+        <option value="McCrosky">McCrosky</option>
+        <option value="Streit Perham">Streit Perham</option>
+        <option value="Orton">Orton</option>
       </select>
       <br><br>
 
@@ -53,7 +51,7 @@
         <option value="none"></option> 
         <option value="under 19">18 or younger</option> 
         <option value="under 21">19-20</option>
-        <option value="over 21">21 or older</option>
+        <option value="21 or more">21 or older</option>
       </select>
       <br><br>
 
@@ -110,7 +108,7 @@
 
     <p id="error" style="color: red;"></p>
 
-    <script src="preferences/get_preferences.js"></script>
+    <script src="preferences/SavePreferences.js"></script>
 
   </body>
 </html>
