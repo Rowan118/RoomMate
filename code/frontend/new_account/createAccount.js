@@ -1,6 +1,6 @@
 //some of these are not arbitrary names due to the type of data being used. PLEASE do not refactor them
 const submitInput = document.getElementById("submit");
-const accountType = document.getElementById("accountType");
+const accountInput = document.getElementById("accountType");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const error = document.getElementById("error");
@@ -13,8 +13,8 @@ submitInput.addEventListener("click", async function () {
 
     const email = emailInput.value.trim();
     const password = passwordInput.value;
-    const index = accountType.selectedIndex;
-    const account = accountType.options[index].value;
+    const index = accountInput.selectedIndex;
+    const account = accountInput.options[index].value;
 
     if (!email.includes("@wsu.edu")) {
         error.innerText = "Not a valid WSU email";
@@ -50,7 +50,8 @@ submitInput.addEventListener("click", async function () {
     }
 
     if (account.includes("RA")) {
-        //this is just an example of how this check might work for RAs
+        //function for testing frontend functionality
+        //remove when backend functionality is implemented
         const testEmail = "bob.smith@wsu.edu";
         if (!(email === testEmail)) {
             error.innerText = "Cannot create an RA account with this email"

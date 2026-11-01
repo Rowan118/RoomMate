@@ -14,6 +14,10 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 /** Routes /api/register and /api/login. */
+
+//Ila -- added route to where preferences will be handled
+//actual names can be changed - just make sure to change them in the frontend too
+
 public class ApiHandler implements HttpHandler {
 
     private static final Gson GSON = new Gson();
@@ -40,6 +44,10 @@ public class ApiHandler implements HttpHandler {
             switch (path) {
                 case "/api/register" -> handleRegister(exchange);
                 case "/api/login"    -> handleLogin(exchange);
+                //for adding preferences
+                case "/api/addPreferences" -> handleAddPreferences(exchange);
+                //for modifying preferences
+                case "/api/modifyPreferences" -> handleModifyPreferences(exchange);
                 default              -> sendJson(exchange, 404, error("Unknown endpoint: " + path));
             }
         } catch (SQLException e) {
@@ -114,6 +122,18 @@ public class ApiHandler implements HttpHandler {
         }
 
         sendJson(exchange, 200, success("Logged in"));
+    }
+
+    // ---------- POST /api/addPreferences ----------
+
+    public void handleAddPreferences(HttpExchange exchange) throws IOException, SQLException {
+        return;
+    }
+
+    // ---------- POST /api/modifyPreferences ----------
+
+    public void handleModifyPreferences(HttpExchange exchange) throws IOException, SQLException {
+        return;
     }
 
     // ---------- Shared validation (mirrors the client-side rules) ----------
