@@ -1,17 +1,17 @@
 package com.roommate;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 
 /** Routes /api/register and /api/login. */
 
@@ -36,6 +36,9 @@ public class ApiHandler implements HttpHandler {
         this.users = users;
     }
 
+    /* Overridden HTTP network method from the standard library.
+     * Connects the database to the http server.
+     */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         addCorsHeaders(exchange);
@@ -67,8 +70,12 @@ public class ApiHandler implements HttpHandler {
         }
     }
 
-    // ---------- POST /api/register ----------
-
+    /**
+     * Handles POST /api/register
+     * @param exchange HttpExchange
+     * @throws IOException If a network error occurs, an IOException may be thrown.
+     * @throws SQLException If accessing the SQL database fails, an SQLException may be thrown.
+     */
     private void handleRegister(HttpExchange exchange) throws IOException, SQLException {
         if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
             sendJson(exchange, 405, error("Use POST for this endpoint"));
@@ -106,8 +113,12 @@ public class ApiHandler implements HttpHandler {
         sendJson(exchange, 201, success("Account created"));
     }
 
-    // ---------- POST /api/login ----------
-
+    /**
+     * Handles POST /api/login
+     * @param exchange HttpExchange
+     * @throws IOException If a network error occurs, an IOException may be thrown.
+     * @throws SQLException If accessing the SQL database fails, an SQLException may be thrown.
+     */
     private void handleLogin(HttpExchange exchange) throws IOException, SQLException {
         if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
             sendJson(exchange, 405, error("Use POST for this endpoint"));
@@ -132,20 +143,31 @@ public class ApiHandler implements HttpHandler {
         sendJson(exchange, 200, success("Logged in"));
     }
 
-    // ---------- POST /api/addPreferences ----------
-
+    /**
+     * STUB
+     * @param exchange
+     * @throws IOException
+     * @throws SQLException
+     */
     public void handleAddPreferences(HttpExchange exchange) throws IOException, SQLException {
         return;
     }
 
-    // ---------- POST /api/modifyPreferences ----------
-
+    /**
+     * STUB
+     * @param exchange HttpExchange
+     * @throws IOException If a network error occurs, an IOException may be thrown.
+     * @throws SQLException If accessing the SQL database fails, an SQLException may be thrown.
+     */
     public void handleModifyPreferences(HttpExchange exchange) throws IOException, SQLException {
         return;
     }
 
-    // ---------- Shared validation (mirrors the client-side rules) ----------
-
+    /**
+     * Check if the password is correctly formatted before accepting it.
+     * @param password The password to check.
+     * @return If the password is invalid, a String will be returned. If it's valid, null is returned.
+     */
     private String validatePassword(String password) {
         if (password == null || password.length() < 10) {
             return "Password must be at least 10 characters long";
@@ -162,11 +184,19 @@ public class ApiHandler implements HttpHandler {
         if (!password.matches(".*[0-9].*")) {
             return "Password must contain at least one number";
         }
-        return null; // valid
+
+        // Null means valid password
+        return null;
     }
 
     // ---------- HTTP helpers ----------
 
+    /**
+     * Read an HttpExchange request and recieve a JSON object of the request for interpreting.
+     * @param exchange HttpExchange
+     * @throws IOException If a network error occurs, an IOException may be thrown.
+     * @throws SQLException If accessing the SQL database fails, an SQLException may be thrown.
+     */
     private JsonObject readBody(HttpExchange exchange) throws IOException {
         try (InputStream in = exchange.getRequestBody()) {
             String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
@@ -177,10 +207,23 @@ public class ApiHandler implements HttpHandler {
         }
     }
 
+    /**
+     * Extract a String field from a JSON object.
+     * @param obj The JSON to insepct.
+     * @param key The JSON field to observe.
+     * @return The String value within that JSON field.
+     */
     private String optString(JsonObject obj, String key) {
         return obj.has(key) && !obj.get(key).isJsonNull() ? obj.get(key).getAsString() : null;
     }
 
+    /**
+     * Writes a JSON response body with the given HTTP status code.
+     * @param exchange The HTTP exchange to write to.
+     * @param status The HTTP status code.
+     * @param payload The JSON body to serialize to.
+     * @throws IOException An IOException may be thrown if writing to the stream fails.
+     */
     private void sendJson(HttpExchange exchange, int status, JsonObject payload) throws IOException {
         byte[] bytes = GSON.toJson(payload).getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
@@ -190,6 +233,11 @@ public class ApiHandler implements HttpHandler {
         }
     }
 
+    /**
+     * Sets the CORS (Cross-Origin Resource Sharing) response headers permitting cross-origin requests from the frontend.
+     * Note: The wildcard {@code *} origin is for local development and should be changed if deployed on a real website.
+     * @param exchange Exchange the HTTP exchange whose response headers to modify.
+     */
     private void addCorsHeaders(HttpExchange exchange) {
         Headers h = exchange.getResponseHeaders();
         // Wide open for local development. Tighten to your GitHub Pages origin
@@ -200,6 +248,11 @@ public class ApiHandler implements HttpHandler {
         h.set("Access-Control-Max-Age", "86400");
     }
 
+    /**
+     * Factory for generating a JSON success response.
+     * @param message Human-readable message summary.
+     * @return The response payload.
+     */
     private JsonObject success(String message) {
         JsonObject o = new JsonObject();
         o.addProperty("ok", true);
@@ -207,6 +260,11 @@ public class ApiHandler implements HttpHandler {
         return o;
     }
 
+    /**
+     * Factory for generating a JSON error response.
+     * @param message Human-readable message summary.
+     * @return The response payload.
+     */
     private JsonObject error(String message) {
         JsonObject o = new JsonObject();
         o.addProperty("ok", false);
