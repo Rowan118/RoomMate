@@ -6,7 +6,7 @@ const dormPrefInput = document.getElementById("dormPref");
 const roomTypeInput = document.getElementById("roomType");
 const ageInput = document.getElementById("age");
 const genderInput = document.getElementById("gender");
-const sameGenderPrefInput = document.getElementById("sameGender");
+const sameGenderPrefInput = document.getElementById("sameGenderPref");
 const wakeTimeInput = document.getElementById("wakeTime");
 const sleepTimeInput = document.getElementById("sleepTime");
 const alcoholPrefInput = document.getElementById("alcohol");
@@ -65,7 +65,7 @@ submitInput.addEventListener("click", async function() {
     return false;
   }
 
-  if (dormPref === "McCrosky" && sameGenderPref === yes) {
+  if (dormPref === "McCrosky" && sameGenderPref === "yes") {
     error.innerText = "Pick a different hall for rooming with the same gender";
     return false;
   }
