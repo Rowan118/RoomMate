@@ -71,7 +71,7 @@ submitInput.addEventListener("click", async function() {
   }
 
   if (age === "under 21" && alcoholPref !== "under21") {
-      error.innerText = "Alcohol preference must be selected as 'under 21'";
+      error.innerText = "Alcohol preference must be set as 'under 21'";
       return false;
   }
 
