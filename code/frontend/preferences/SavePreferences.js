@@ -98,7 +98,8 @@ submitInput.addEventListener("click", async function() {
         }
 
         window.location.href = "submission.html";
-    } catch (err) {
+    } 
+    catch (err) {
         error.innerText = "Something went wrong. Try again later";
     }
 

@@ -1,4 +1,8 @@
-//Prompts backend for data, either returns data to html or redirects to add_preferences
+const userEmailInput = document.getElementById("sessionMessage");
+
+async function fetchPreferences() {
+//Prompts backend for data, returns data if preferences for user exists
 
 
-window.location.href = "add_preferences.html";
+
+}
