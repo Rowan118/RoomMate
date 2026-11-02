@@ -70,9 +70,14 @@ submitInput.addEventListener("click", async function() {
     return false;
   }
 
-  if (age === "under 21" && ( alcoholPref === "yes" || alcoholPref === "no" )) {
-    error.innerText = "Alcohol preference must be selected as 'under 21'";
-    return false;
+  if (age === "under 21" && alcoholPref !== "under21") {
+      error.innerText = "Alcohol preference must be selected as 'under 21'";
+      return false;
+  }
+
+  if (age === "21 or more" && alcoholPref === "under21") {
+      error.innerText = "Please select 'No' or 'Yes' instead";
+      return false;
   }
 
   //moves information to backend once processed
