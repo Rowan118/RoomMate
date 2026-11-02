@@ -55,6 +55,7 @@ submitInput.addEventListener("click", async function () {
         const testEmail = "bob.smith@wsu.edu";
         if (!(email === testEmail)) {
             error.innerText = "Cannot create an RA account with this email"
+            return false;
         }
     }
 
