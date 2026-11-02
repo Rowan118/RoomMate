@@ -18,12 +18,20 @@ import java.sql.SQLException;
 //Ila -- added route to where preferences will be handled
 //actual names can be changed - just make sure to change them in the frontend too
 
+/**
+ * Handle API requests
+ * ApiHandler
+ */
 public class ApiHandler implements HttpHandler {
 
     private static final Gson GSON = new Gson();
 
     private final UserDao users;
 
+    /**
+     * ApiHandler object
+     * @param users A UserDao (Data Access Object) object
+     */
     public ApiHandler(UserDao users) {
         this.users = users;
     }
