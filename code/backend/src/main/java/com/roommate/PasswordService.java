@@ -1,18 +1,10 @@
 package com.roommate;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
 /**
  * Single place where password storage rules live.
- *
- * !!! PROOF OF CONCEPT ONLY !!!
- * Passwords are currently stored as plaintext. Before this handles any real
- * user data, replace hash() and verify() with Argon2id, bcrypt, or scrypt
- * (e.g. the org.mindrot:jbcrypt or de.mkammerer:argon2-jvm libraries).
- * Nothing outside this class needs to change when you do.
  */
 public class PasswordService {
 
