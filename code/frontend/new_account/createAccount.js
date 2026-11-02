@@ -74,7 +74,7 @@ submitInput.addEventListener("click", async function () {
             return false;
         }
 
-        window.location.href = "homepage.html";
+        window.location.href = "../homepage/homepage.html";
     } catch (err) {
         error.innerText = "Could not reach the server. Is the backend running?";
     }
