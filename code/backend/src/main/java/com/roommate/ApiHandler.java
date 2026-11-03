@@ -145,7 +145,7 @@ public class ApiHandler implements HttpHandler {
         String sessionId = sessions.createSession(email);
         exchange.getResponseHeaders().add(
             "Set-Cookie",
-            "sessionId=" + sessionId + "; Path=/; HttpOnly; SameSite=Lax"
+            "sessionId=" + sessionId + "; Path=/; HttpOnly; SameSite=None; Secure"
         );
 
         sendJson(exchange, 200, success("Logged in"));
@@ -191,7 +191,7 @@ public class ApiHandler implements HttpHandler {
 
         exchange.getResponseHeaders().add(
             "Set-Cookie",
-            "sessionId=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0"
+            "sessionId=; Path=/; HttpOnly; SameSite=None; Secure; Max-Age=0"
         );
 
         sendJson(exchange, 200, success("Logged out"));
@@ -204,7 +204,7 @@ public class ApiHandler implements HttpHandler {
      * @throws SQLException
      */
     public void handleAddPreferences(HttpExchange exchange) throws IOException, SQLException {
-        return;
+        sendJson(exchange, 501, error("Preferences are not implemented yet"));
     }
 
     /**
@@ -214,7 +214,7 @@ public class ApiHandler implements HttpHandler {
      * @throws SQLException If accessing the SQL database fails, an SQLException may be thrown.
      */
     public void handleModifyPreferences(HttpExchange exchange) throws IOException, SQLException {
-        return;
+        sendJson(exchange, 501, error("Preferences are not implemented yet"));
     }
 
     /**
