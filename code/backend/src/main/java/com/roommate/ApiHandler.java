@@ -15,6 +15,9 @@ import com.sun.net.httpserver.HttpHandler;
 
 /** Routes /api/register and /api/login. */
 
+//Ila -- added route to where preferences will be handled
+//actual names can be changed - just make sure to change them in the frontend too
+
 /**
  * Handle API requests
  * ApiHandler
@@ -24,16 +27,13 @@ public class ApiHandler implements HttpHandler {
     private static final Gson GSON = new Gson();
 
     private final UserDao users;
-    private final SessionStore sessions;
 
     /**
      * ApiHandler object
      * @param users A UserDao (Data Access Object) object
-     * @param sessions A session store used to track logged-in users
      */
-    public ApiHandler(UserDao users, SessionStore sessions) {
+    public ApiHandler(UserDao users) {
         this.users = users;
-        this.sessions = sessions;
     }
 
     /* Overridden HTTP network method from the standard library.
@@ -54,14 +54,12 @@ public class ApiHandler implements HttpHandler {
         try {
             switch (path) {
                 case "/api/register" -> handleRegister(exchange);
-                case "/api/login" -> handleLogin(exchange);
-                case "/api/session" -> handleSession(exchange);
-                case "/api/logout" -> handleLogout(exchange);
+                case "/api/login"    -> handleLogin(exchange);
                 //for adding preferences
                 case "/api/addPreferences" -> handleAddPreferences(exchange);
                 //for modifying preferences
                 case "/api/modifyPreferences" -> handleModifyPreferences(exchange);
-                default -> sendJson(exchange, 404, error("Unknown endpoint: " + path));
+                default              -> sendJson(exchange, 404, error("Unknown endpoint: " + path));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -142,59 +140,7 @@ public class ApiHandler implements HttpHandler {
             return;
         }
 
-        String sessionId = sessions.createSession(email);
-        exchange.getResponseHeaders().add(
-            "Set-Cookie",
-            "sessionId=" + sessionId + "; Path=/; HttpOnly; SameSite=None; Secure"
-        );
-
         sendJson(exchange, 200, success("Logged in"));
-    }
-
-    /**
-     * Returns the currently logged in user's email if a valid cookie is present.
-     * @param exchange HttpExchange
-     * @throws IOException If a network error occurs, an IOException may be thrown.
-     */
-    private void handleSession(HttpExchange exchange) throws IOException {
-        if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-            sendJson(exchange, 405, error("Use GET for this endpoint"));
-            return;
-        }
-
-        String sessionId = readCookie(exchange, "sessionId");
-        String email = sessions.getEmail(sessionId);
-        if (email == null) {
-            sendJson(exchange, 401, error("Not logged in"));
-            return;
-        }
-
-        JsonObject payload = new JsonObject();
-        payload.addProperty("ok", true);
-        payload.addProperty("email", email);
-        sendJson(exchange, 200, payload);
-    }
-
-    /**
-     * Removes the active session cookie from the browser.
-     * @param exchange HttpExchange
-     * @throws IOException If a network error occurs, an IOException may be thrown.
-     */
-    private void handleLogout(HttpExchange exchange) throws IOException {
-        if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-            sendJson(exchange, 405, error("Use POST for this endpoint"));
-            return;
-        }
-
-        String sessionId = readCookie(exchange, "sessionId");
-        sessions.removeSession(sessionId);
-
-        exchange.getResponseHeaders().add(
-            "Set-Cookie",
-            "sessionId=; Path=/; HttpOnly; SameSite=None; Secure; Max-Age=0"
-        );
-
-        sendJson(exchange, 200, success("Logged out"));
     }
 
     /**
@@ -204,7 +150,7 @@ public class ApiHandler implements HttpHandler {
      * @throws SQLException
      */
     public void handleAddPreferences(HttpExchange exchange) throws IOException, SQLException {
-        sendJson(exchange, 501, error("Preferences are not implemented yet"));
+        return;
     }
 
     /**
@@ -214,7 +160,7 @@ public class ApiHandler implements HttpHandler {
      * @throws SQLException If accessing the SQL database fails, an SQLException may be thrown.
      */
     public void handleModifyPreferences(HttpExchange exchange) throws IOException, SQLException {
-        sendJson(exchange, 501, error("Preferences are not implemented yet"));
+        return;
     }
 
     /**
@@ -287,26 +233,6 @@ public class ApiHandler implements HttpHandler {
         }
     }
 
-    private String readCookie(HttpExchange exchange, String key) {
-        Headers headers = exchange.getRequestHeaders();
-        if (!headers.containsKey("Cookie")) {
-            return null;
-        }
-
-        String cookieHeader = headers.getFirst("Cookie");
-        if (cookieHeader == null) {
-            return null;
-        }
-
-        for (String part : cookieHeader.split(";")) {
-            String trimmed = part.trim();
-            if (trimmed.startsWith(key + "=")) {
-                return trimmed.substring((key + "=").length());
-            }
-        }
-        return null;
-    }
-
     /**
      * Sets the CORS (Cross-Origin Resource Sharing) response headers permitting cross-origin requests from the frontend.
      * Note: The wildcard {@code *} origin is for local development and should be changed if deployed on a real website.
@@ -314,16 +240,10 @@ public class ApiHandler implements HttpHandler {
      */
     private void addCorsHeaders(HttpExchange exchange) {
         Headers h = exchange.getResponseHeaders();
-        String origin = exchange.getRequestHeaders().getFirst("Origin");
-
-        if (origin != null && !origin.isBlank()) {
-            h.set("Access-Control-Allow-Origin", origin);
-        } else {
-            h.set("Access-Control-Allow-Origin", "http://localhost:8000");
-        }
-
-        h.set("Access-Control-Allow-Credentials", "true");
-        h.set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
+        // Wide open for local development. Tighten to your GitHub Pages origin
+        // (and eventually your real domain) before deploying.
+        h.set("Access-Control-Allow-Origin", "*");
+        h.set("Access-Control-Allow-Methods", "POST, OPTIONS");
         h.set("Access-Control-Allow-Headers", "Content-Type");
         h.set("Access-Control-Max-Age", "86400");
     }

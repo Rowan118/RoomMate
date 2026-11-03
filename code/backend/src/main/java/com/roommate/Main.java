@@ -14,10 +14,9 @@ public class Main {
         Database db = new Database(dbPath);
         PasswordService passwords = new PasswordService();
         UserDao users = new UserDao(db, passwords);
-        SessionStore sessions = new SessionStore();
 
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.createContext("/api", new ApiHandler(users, sessions));
+        server.createContext("/api", new ApiHandler(users));
 
         // Single-threaded: SQLite only allows one writer at a time, and for a
         // proof of concept this avoids SQLITE_BUSY entirely. Swap for a thread
