@@ -51,6 +51,6 @@ public class PreferencesDatabase {
                 SELECT RAISE(ABORT, 'Placement profile is locked');
             END
             """
-        }
+        };
     }
 }
