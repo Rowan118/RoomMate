@@ -16,8 +16,7 @@ async function loadUser() {
         if (sessionMessage) {
             sessionMessage.textContent = "User:  " + data.email;
         }
-    } 
-    catch (err) {
+    } catch (err) {
         if (sessionMessage) {
             sessionMessage.textContent = "Something went wrong. Please log in again.";
         }
