@@ -25,7 +25,7 @@ public class Database {
     }
 
     /**
-     * Create a new database prepopulated with columns.
+     * Create a new database for user accounts
      */
     private void init() {
         String sql = """
@@ -34,22 +34,6 @@ public class Database {
                 email      TEXT NOT NULL UNIQUE COLLATE NOCASE,
                 password   TEXT NOT NULL,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-            """;
-            String sql2 = """
-            CREATE TABLE IF NOT EXISTS preferences (
-                email           TEXT PRIMARY KEY UNIQUE COLLATE NOCASE,
-                firstName       TEXT NOT NULL,
-                lastName        TEXT NOT NULL,
-                major           TEXT NOT NULL,
-                dormPref        TEXT NOT NULL,
-                roomType        TEXT NOT NULL,
-                age             Text NOT NULL,
-                gender          TEXT NOT NULL,
-                sameGenderPref  TEXT NOT NULL,
-                wake_time       TEXT NOT NULL,
-                sleep_time      TEXT NOT NULL,
-                alcoholPref     TEXT NOT NULL,
             )
             """;
         try (Connection conn = connect(); Statement st = conn.createStatement()) {
