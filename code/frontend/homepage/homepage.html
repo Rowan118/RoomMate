@@ -3,20 +3,24 @@
   <!-- this will serve as the homepage for our site -->
   <head>
     <meta charset="utf-8">
-    <title>RoomMate homepage</title>
+    <title>homepage</title>
   </head>
   <body>
     <h1>Welcome to RoomMate!</h1>
-    <p>What would you like to do? </p>  
+    <p id="sessionMessage">Loading...</p>
 
-    <a href="../preferences/view_preferences.html">
-    add or change your room preferences
+    <script src="../session/loadSession.js"></script>
+
+    <p>What would you like to do? </p>
+
+    <a href="../preferences/add_preferences.html">
+      add or change your room preferences
     </a>
 
     <a href="view_assignment.html">
-    view your room assignment - coming soon
+      view your room assignment - coming soon
     </a>
 
-</body>
+  </body>
 </html>
 
