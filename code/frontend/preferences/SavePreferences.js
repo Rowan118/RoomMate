@@ -1,4 +1,5 @@
 const submitInput = document.getElementById("submit");
+const emailInput = document.getElementById("sessionMessage");
 const firstNameInput = document.getElementById("firstName");
 const lastNameInput = document.getElementById("lastName");
 const majorInput = document.getElementById("major");
