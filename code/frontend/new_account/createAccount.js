@@ -4,7 +4,9 @@ const accountInput = document.getElementById("accountType");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const error = document.getElementById("error");
-const API_BASE = "http://localhost:8080";
+const API_BASE = window.location.hostname === "127.0.0.1" 
+    ? "http://127.0.0.1:8080" 
+    : "http://localhost:8080";
 
 submitInput.addEventListener("click", async function () {
 
