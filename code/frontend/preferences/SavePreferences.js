@@ -20,6 +20,7 @@ submitInput.addEventListener("click", async function() {
 
   error.innerText = "";
 
+  const email = emailInput.value.trim();
   const firstName = firstNameInput.value;
   const lastName = lastNameInput.value;
   const major = majorInput.value;

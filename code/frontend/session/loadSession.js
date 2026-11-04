@@ -20,7 +20,7 @@ async function loadUser() {
 
         const data = await response.json();
         if (sessionMessage) {
-            sessionMessage.textContent = "User: " + data.email;
+            sessionMessage.textContent = data.email;
         }
     } catch (err) {
         // Ignore AbortError (happens when you click a link before the fetch finishes)
