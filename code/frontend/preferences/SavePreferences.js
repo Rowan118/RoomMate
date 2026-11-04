@@ -9,9 +9,11 @@ const genderInput = document.getElementById("gender");
 const sameGenderPrefInput = document.getElementById("sameGenderPref");
 const wakeTimeInput = document.getElementById("wakeTime");
 const sleepTimeInput = document.getElementById("sleepTime");
-const alcoholPrefInput = document.getElementById("alcohol");
+const alcoholPrefInput = document.getElementById("alcoholPref");
 const error = document.getElementById("error");
-const API_BASE = "http://localhost:8080";
+const API_BASE = window.location.hostname === "127.0.0.1" 
+    ? "http://127.0.0.1:8080" 
+    : "http://localhost:8080";
 
 submitInput.addEventListener("click", async function() {
 
@@ -71,7 +73,7 @@ submitInput.addEventListener("click", async function() {
   }
 
   if (age === "under 21" && alcoholPref !== "under21") {
-      error.innerText = "Alcohol preference must be selected as 'under 21'";
+      error.innerText = "Alcohol preference must be set as 'under 21'";
       return false;
   }
 
@@ -98,7 +100,8 @@ submitInput.addEventListener("click", async function() {
         }
 
         window.location.href = "submission.html";
-    } catch (err) {
+    } 
+    catch (err) {
         error.innerText = "Something went wrong. Try again later";
     }
 
