@@ -9,14 +9,19 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
-        String dbPath = System.getenv().getOrDefault("DB_PATH", "roommate.db");
+        String loginDbPath = System.getenv().getOrDefault("DB_PATH", "roommate.db");
+        String preferenceDbPath = System.getenv().getOrDefault("DB_PATH", "preferences.db");
 
-        Database loginDb = new LoginDatabase(dbPath);
+        // Initialize databases
+        Database loginDb = new LoginDatabase(loginDbPath);
         loginDb.init();
+        Database preferenceDb = new PreferencesDatabase(preferenceDbPath);
+        preferenceDb.init();
+
+        // Initialize services
         PasswordService passwords = new PasswordService();
         UserDao users = new UserDao(loginDb, passwords);
         SessionStore sessions = new SessionStore();
-
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/api", new ApiHandler(users, sessions));
 
@@ -27,6 +32,7 @@ public class Main {
         server.start();
 
         System.out.println("RoomMate backend listening on http://localhost:" + port);
-        System.out.println("SQLite file: " + dbPath);
+        System.out.println("Login SQLite file: " + loginDbPath);
+        System.out.println("Preferences SQLite file: " + preferenceDbPath);
     }
 }
