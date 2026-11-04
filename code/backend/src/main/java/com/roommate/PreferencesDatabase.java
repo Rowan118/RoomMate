@@ -4,12 +4,24 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * PreferencesDatabase
+ */
 public class PreferencesDatabase extends Database {
     
+    /**
+     * Create a new student preferences SQLite database.
+     * Contains the user's e-mail along with a plethora of user preferences for which dorm to be selected for.
+     * @param filePath Path to the SQLite database file.
+     */
     public PreferencesDatabase(String filePath) {
         super(filePath);
     }
 
+    /**    (non-Javadoc)
+     * 
+     * @see com.roommate.Database#init()
+     */
     @Override 
     void init() {
         String[] sql = {

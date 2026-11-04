@@ -26,7 +26,6 @@ public abstract class Database {
     /**
      * Create a new database prepopulated with columns.
      */
-
     abstract void init();
 
     /**

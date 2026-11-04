@@ -5,12 +5,24 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * LoginDatabase
+ */
 public class LoginDatabase extends Database {
 
+    /**
+     * Create a new login SQLite database.
+     * Contains user e-mail, password hashes, and login attempts.
+     * @param filePath Path to the SQLite database file.
+     */
     public LoginDatabase(String filePath) {
         super(filePath);
     }
 
+    /**    (non-Javadoc)
+     * 
+     * @see com.roommate.Database#init()
+     */
     @Override
     void init() {
         String sql = """
