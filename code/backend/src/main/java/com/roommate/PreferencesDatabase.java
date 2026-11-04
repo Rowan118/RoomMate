@@ -5,16 +5,21 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class PreferencesDatabase {
+public class PreferencesDatabase extends Database {
     
-    private final Database db;
-
-    public PreferencesDatabase(Database db){
-        this.db = db;
-        init();
+    public PreferencesDatabase(String filePath) {
+        super(filePath);
     }
 
-    private void init(){
+    // private final Database db;
+
+    // public PreferencesDatabase(Database db){
+    //     this.db = db;
+    //     init();
+    // }
+
+    @Override 
+    void init(){
         String[] preferences = {
             """
             CREATE TABLE IF NOT EXISTS placement_profile (

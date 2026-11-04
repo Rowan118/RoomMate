@@ -11,7 +11,7 @@ public class Main {
         int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
         String dbPath = System.getenv().getOrDefault("DB_PATH", "roommate.db");
 
-        Database db = new Database(dbPath);
+        Database db = new LoginDatabase(dbPath);
         PasswordService passwords = new PasswordService();
         UserDao users = new UserDao(db, passwords);
         SessionStore sessions = new SessionStore();
