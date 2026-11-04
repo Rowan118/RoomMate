@@ -1,7 +1,6 @@
 package com.roommate;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -11,16 +10,9 @@ public class PreferencesDatabase extends Database {
         super(filePath);
     }
 
-    // private final Database db;
-
-    // public PreferencesDatabase(Database db){
-    //     this.db = db;
-    //     init();
-    // }
-
     @Override 
-    void init(){
-        String[] preferences = {
+    void init() {
+        String[] sql = {
             """
             CREATE TABLE IF NOT EXISTS placement_profile (
                 user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
@@ -57,5 +49,14 @@ public class PreferencesDatabase extends Database {
             END
             """
         };
+
+        try (Connection conn = connect(); Statement st = conn.createStatement()) {
+            // Loop through each SQL statement in the array since it's an array of Strings.
+            for (String statement : sql) {
+                st.execute(statement);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not initialize database", e);
+        }
     }
 }

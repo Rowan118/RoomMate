@@ -11,9 +11,10 @@ public class Main {
         int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
         String dbPath = System.getenv().getOrDefault("DB_PATH", "roommate.db");
 
-        Database db = new LoginDatabase(dbPath);
+        Database loginDb = new LoginDatabase(dbPath);
+        loginDb.init();
         PasswordService passwords = new PasswordService();
-        UserDao users = new UserDao(db, passwords);
+        UserDao users = new UserDao(loginDb, passwords);
         SessionStore sessions = new SessionStore();
 
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
