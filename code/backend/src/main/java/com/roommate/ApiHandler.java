@@ -210,8 +210,13 @@ public class ApiHandler implements HttpHandler {
         }
 
         JsonObject body = readBody(exchange);
+        // Get session ID
+        // Check if the e-mail associated with the session exists in login
+        // Check if the preferences database contains an entry already. If so, send an error saying the user should go to the modify preferences page.
+        // Enumterate through the preferences in the body and store them in some data structure
+        // Send a preferences database API call to add them in
 
-        // sendJson(exchange, 501, error("Preferences are not implemented yet"));
+
         sendJson(exchange, 501, error("handleAddPreferences recieved:\n" + body));
     }
 
@@ -229,7 +234,12 @@ public class ApiHandler implements HttpHandler {
 
         JsonObject body = readBody(exchange);
 
-        // sendJson(exchange, 501, error("Preferences are not implemented yet"));
+        // Get session ID
+        // Check if the e-mail associated with the session exists in login
+        // Check if the preferences database contains an entry already. If not, send error that the user doesn't exist.
+        // Else, Enumterate through the preferences in the body and store them in some data structure
+        // Send a preferences database API call to overwrite the existing preferences
+
         sendJson(exchange, 501, error("handleModifyPreferences recieved:\n" + body));
     }
 
