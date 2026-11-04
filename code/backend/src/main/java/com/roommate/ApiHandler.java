@@ -204,7 +204,15 @@ public class ApiHandler implements HttpHandler {
      * @throws SQLException
      */
     public void handleAddPreferences(HttpExchange exchange) throws IOException, SQLException {
-        sendJson(exchange, 501, error("Preferences are not implemented yet"));
+        if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+            sendJson(exchange, 405, error("Use GET for this endpoint"));
+            return;
+        }
+
+        JsonObject body = readBody(exchange);
+
+        // sendJson(exchange, 501, error("Preferences are not implemented yet"));
+        sendJson(exchange, 501, error("handleAddPreferences recieved:\n" + body));
     }
 
     /**
@@ -214,7 +222,15 @@ public class ApiHandler implements HttpHandler {
      * @throws SQLException If accessing the SQL database fails, an SQLException may be thrown.
      */
     public void handleModifyPreferences(HttpExchange exchange) throws IOException, SQLException {
-        sendJson(exchange, 501, error("Preferences are not implemented yet"));
+        if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+            sendJson(exchange, 405, error("Use GET for this endpoint"));
+            return;
+        }
+
+        JsonObject body = readBody(exchange);
+
+        // sendJson(exchange, 501, error("Preferences are not implemented yet"));
+        sendJson(exchange, 501, error("handleModifyPreferences recieved:\n" + body));
     }
 
     /**
