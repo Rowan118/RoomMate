@@ -1,3 +1,4 @@
+(() => {
 const submitInput = document.getElementById("submit");
 const firstNameInput = document.getElementById("firstName");
 const lastNameInput = document.getElementById("lastName");
@@ -87,6 +88,7 @@ submitInput.addEventListener("click", async function() {
   try {
         const response = await fetch(`${API_BASE}/api/addPreferences`, {
             method: "POST",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ firstName, lastName, major, dormPref, roomType, age, gender, 
                 sameGenderPref, wakeTime, sleepTime, alcoholPref
@@ -99,6 +101,7 @@ submitInput.addEventListener("click", async function() {
             return false;
         }
 
+        sessionStorage.setItem("submittedPreferences", JSON.stringify(data.preferences));
         window.location.href = "submission.html";
     } 
     catch (err) {
@@ -109,3 +112,4 @@ submitInput.addEventListener("click", async function() {
     return false;
 
 });
+})();

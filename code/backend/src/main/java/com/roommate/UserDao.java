@@ -39,6 +39,23 @@ public class UserDao {
     }
 
     /**
+     * Get the user's ID from their e-mail address.
+     * @param email Email address
+     * @return The user's ID
+     * @throws SQLException May occur if the SQL operation fails.
+     */
+    public Long findUserIdByEmail(String email) throws SQLException {
+        String sql = "SELECT id FROM users WHERE email = ?";
+        try (Connection conn = db.connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, normalizeEmail(email));
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getLong("id") : null;
+            }
+        }
+    }
+
+    /**
      * Create a new user row in the database.
      * @param email The new user's e-mail address.
      * @param rawPassword The new user's raw password text (this will then be stored as a hash).
