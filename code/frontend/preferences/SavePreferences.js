@@ -1,5 +1,4 @@
 const submitInput = document.getElementById("submit");
-const emailInput = document.getElementById("sessionMessage");
 const firstNameInput = document.getElementById("firstName");
 const lastNameInput = document.getElementById("lastName");
 const majorInput = document.getElementById("major");
@@ -12,15 +11,10 @@ const wakeTimeInput = document.getElementById("wakeTime");
 const sleepTimeInput = document.getElementById("sleepTime");
 const alcoholPrefInput = document.getElementById("alcoholPref");
 const error = document.getElementById("error");
-const API_BASE = window.location.hostname === "127.0.0.1" 
-    ? "http://127.0.0.1:8080" 
-    : "http://localhost:8080";
-
 submitInput.addEventListener("click", async function() {
 
   error.innerText = "";
 
-  const email = emailInput.value.trim();
   const firstName = firstNameInput.value;
   const lastName = lastNameInput.value;
   const major = majorInput.value;
@@ -90,6 +84,7 @@ submitInput.addEventListener("click", async function() {
         const response = await fetch(`${API_BASE}/api/addPreferences`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ firstName, lastName, major, dormPref, roomType, age, gender, 
                 sameGenderPref, wakeTime, sleepTime, alcoholPref
              })

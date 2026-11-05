@@ -1,12 +1,14 @@
 package com.roommate;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -28,8 +30,8 @@ public class ApiHandler implements HttpHandler {
         this.loginHandler = new LoginHandler(users, sessions);
         this.sessionHandler = new SessionHandler(sessions);
         this.logoutHandler = new LogoutHandler(sessions);
-        this.addPreferencesHandler = new AddPreferencesHandler();
-        this.modifyPreferencesHandler = new ModifyPreferencesHandler();
+        this.addPreferencesHandler = new AddPreferencesHandler(sessions);
+        this.modifyPreferencesHandler = new ModifyPreferencesHandler(sessions);
     }
 
     @Override
@@ -99,5 +101,26 @@ public class ApiHandler implements HttpHandler {
         headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
         headers.set("Access-Control-Allow-Headers", "Content-Type");
         headers.set("Access-Control-Max-Age", "86400");
+    }
+
+    static String readCookie(HttpExchange exchange, String key) {
+        Headers headers = exchange.getRequestHeaders();
+        String cookieHeader = headers.getFirst("Cookie");
+        if (cookieHeader == null) return null;
+
+        for (String part : cookieHeader.split(";")) {
+            String trimmed = part.trim();
+            if (trimmed.startsWith(key + "=")) {
+                return trimmed.substring((key + "=").length());
+            }
+        }
+        return null;
+    }
+
+    static JsonObject readBody(HttpExchange exchange) throws IOException {
+        try (InputStream in = exchange.getRequestBody()) {
+            String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            return raw.isBlank() ? new JsonObject() : JsonParser.parseString(raw).getAsJsonObject();
+        }
     }
 }
