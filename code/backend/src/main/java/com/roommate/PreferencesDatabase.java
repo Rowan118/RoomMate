@@ -1,6 +1,8 @@
 package com.roommate;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -48,7 +50,7 @@ public class PreferencesDatabase extends Database {
         String[] sql = {
             """
             CREATE TABLE IF NOT EXISTS placement_profile (
-                user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+                email            TEXT PRIMARY KEY COLLATE NOCASE,
                 first_name       TEXT NOT NULL,
                 last_name        TEXT NOT NULL,
                 major            TEXT NOT NULL,
@@ -62,7 +64,7 @@ public class PreferencesDatabase extends Database {
             """,
             """
             CREATE TABLE IF NOT EXISTS lifestyle_preferences (
-                user_id        INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+                email          TEXT PRIMARY KEY COLLATE NOCASE,
                 sleep_time     TEXT,
                 wake_time      TEXT,
                 drug_tolerance INTEGER NOT NULL DEFAULT 0 CHECK (drug_tolerance BETWEEN 0 AND 3),
@@ -91,5 +93,19 @@ public class PreferencesDatabase extends Database {
         } catch (SQLException e) {
             throw new RuntimeException("Could not initialize database", e);
         }
+    }
+
+    public boolean hasProfile(String email) throws SQLException{
+        try (Connection c = connect();
+            PreparedStatement ps = c.prepareStatement("SELECT 1 FROM placement_profile WHERE email =?")){
+                ps.setString(1, normalize(email));
+                try (ResultSet rs = ps.executeQuery()){
+                    return rs.next();
+                }
+            }
+    }
+
+    private static String normalize(String email){
+        return email.trim().toLowerCase();
     }
 }
