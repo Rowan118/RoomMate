@@ -38,6 +38,17 @@ public class UserDao {
         }
     }
 
+    public Long findUserIdByEmail(String email) throws SQLException {
+        String sql = "SELECT id FROM users WHERE email = ?";
+        try (Connection conn = db.connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, normalizeEmail(email));
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getLong("id") : null;
+            }
+        }
+    }
+
     /**
      * Create a new user row in the database.
      * @param email The new user's e-mail address.

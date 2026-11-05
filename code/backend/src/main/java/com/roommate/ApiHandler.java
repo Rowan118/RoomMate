@@ -23,12 +23,12 @@ public class ApiHandler implements HttpHandler {
     private final AddPreferencesHandler addPreferencesHandler;
     private final ModifyPreferencesHandler modifyPreferencesHandler;
 
-    public ApiHandler(UserDao users, SessionStore sessions) {
+    public ApiHandler(UserDao users, SessionStore sessions, PreferencesDatabase preferences) {
         this.registerHandler = new RegisterHandler(users);
         this.loginHandler = new LoginHandler(users, sessions);
         this.sessionHandler = new SessionHandler(sessions);
         this.logoutHandler = new LogoutHandler(sessions);
-        this.addPreferencesHandler = new AddPreferencesHandler();
+        this.addPreferencesHandler = new AddPreferencesHandler(users, sessions, preferences);
         this.modifyPreferencesHandler = new ModifyPreferencesHandler();
     }
 

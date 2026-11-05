@@ -22,7 +22,7 @@ final class LogoutHandler {
 
         exchange.getResponseHeaders().add(
             "Set-Cookie",
-            "sessionId=; Path=/; HttpOnly; SameSite=None; Secure; Max-Age=0"
+            "sessionId=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0"
         );
 
         api.sendJson(exchange, 200, api.success("Logged out"));

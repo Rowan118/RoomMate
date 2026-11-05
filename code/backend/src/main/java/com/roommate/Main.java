@@ -15,7 +15,7 @@ public class Main {
         // Initialize databases
         Database loginDb = new LoginDatabase(loginDbPath);
         loginDb.init();
-        Database preferenceDb = new PreferencesDatabase(preferenceDbPath);
+        PreferencesDatabase preferenceDb = new PreferencesDatabase(preferenceDbPath);
         preferenceDb.init();
 
         // Initialize services
@@ -23,7 +23,7 @@ public class Main {
         UserDao users = new UserDao(loginDb, passwords);
         SessionStore sessions = new SessionStore();
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.createContext("/api", new ApiHandler(users, sessions));
+        server.createContext("/api", new ApiHandler(users, sessions, preferenceDb));
 
         // Single-threaded: SQLite only allows one writer at a time, and for a
         // proof of concept this avoids SQLITE_BUSY entirely. Swap for a thread

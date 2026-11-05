@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 final class LoginHandler {
@@ -38,10 +39,11 @@ final class LoginHandler {
             return;
         }
 
+        sessions.removeSession(readCookie(exchange, "sessionId"));
         String sessionId = sessions.createSession(email);
         exchange.getResponseHeaders().add(
             "Set-Cookie",
-            "sessionId=" + sessionId + "; Path=/; HttpOnly; SameSite=None; Secure"
+            "sessionId=" + sessionId + "; Path=/; HttpOnly; SameSite=Lax"
         );
 
         api.sendJson(exchange, 200, api.success("Logged in"));
@@ -58,5 +60,21 @@ final class LoginHandler {
         return obj.has(key) && !obj.get(key).isJsonNull()
             ? obj.get(key).getAsString()
             : null;
+    }
+
+    private String readCookie(HttpExchange exchange, String key) {
+        Headers headers = exchange.getRequestHeaders();
+        String cookieHeader = headers.getFirst("Cookie");
+        if (cookieHeader == null) {
+            return null;
+        }
+
+        for (String part : cookieHeader.split(";")) {
+            String trimmed = part.trim();
+            if (trimmed.startsWith(key + "=")) {
+                return trimmed.substring((key + "=").length());
+            }
+        }
+        return null;
     }
 }
