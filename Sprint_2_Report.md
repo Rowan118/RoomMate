@@ -1,27 +1,26 @@
 # Sprint 2 Report
 **Submit one report per team.** Keep it to **1–2 pages**, using brief bullet
 points.
-**Team/Project Name:**
-**Sprint Dates:**
+**Team/Project Name: RoomMate**
+**Sprint Dates: October 15th - November 5th (3 weeks)**
 **Demo Video Link:** [Include awalkthrough of the sprint’s progress as per shared
 video template. Upload to YouTube, keep it unlisted and share its link here]
 ## 1. Work Completed
-List the main features, bug fixes, or tasks completed. Include the corresponding
-GitHub issue links.
-- **[Completed item]:** [Brief description] — [GitHub issue link]
-- **[Completed item]:** [Brief description] — [GitHub issue link]
+- **RA accounts:** Ability to create an RA account if you have a registered RA email — [GitHub issue link]
+- **Account sessions:** [Brief description] — [GitHub issue link]
+- **More efficient database storage:** [Brief description] — [GitHub issue link]
+- **Preference database:** [Brief description] — [GitHub issue link]
+- **Account sessions:** [Brief description] — [GitHub issue link]
+- **Logout function:** [Brief description] — [GitHub issue link]
 ## 2. Incomplete Work
-List unfinished tasks, why they remain incomplete, and the next step. Write
-**“None”** if all planned work is complete.
-| Task / GitHub Issue | Reason Incomplete | Next Step |
-|---|---|---|
-| [Task or issue link] | [Brief reason] | [Plan for completion] |
+| Task | Reason Incomplete | Next Step |
+| Modification of preferences | Needed session tracking first | Complete in first week of sprint 3 |
+| Evaluation of preferences | Pushed back due to more important issues being identified | Complete in first week of sprint 3 |
 ## 3. Team Contributions
-Briefly describe each member’s contribution.
 | Team Member | Main Contribution |
-|---|---|
-| [Name] | [Work completed] |
-| [Name] | [Work completed] |
+| Ila | Session tracking and account functionality |
+| Rowan | [Work completed] |
+| Jacob | [Work completed] |
 ## 4. Code for Review
 Link to **2–3 key code files or pull requests** developed during this sprint and
 briefly describe the changes.
