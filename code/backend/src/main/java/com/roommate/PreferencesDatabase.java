@@ -174,6 +174,48 @@ public class PreferencesDatabase extends Database {
     }
 
     /**
+     * Update the editable fields of an existing profile.
+     * The dorm, gender, and room type are deliberately not touched here; the
+     * {@code lock_placement} trigger also blocks them at the database level.
+     *
+     * @param email The user's e-mail address (any casing).
+     * @param p     The validated preferences to store.
+     * @return False if no profile exists for that e-mail, otherwise true.
+     * @throws SQLException If either update fails. The transaction is rolled back first.
+     */
+    public boolean update(String email, Preferences p) throws SQLException{
+        String key = normalize(email);
+        try (Connection c = connect()){
+            c.setAutoCommit(false);
+            try {
+                int rows;
+                try (PreparedStatement ps = c.prepareStatement("UPDATE placement_profile SET first_name=?, last_name=?, major=?, same_gender_pref=?, "
+                    + "age_range=?, updated_at=CURRENT_TIMESTAMP WHERE email=?")){
+                    ps.setString(1, p.firstName());
+                    ps.setString(2, p.lastName());
+                    ps.setString(3, p.major());
+                    ps.setInt(4, p.sameGenderPref() ? 1 : 0);
+                    ps.setString(5, p.ageRange());
+                    ps.setString(6, key);
+                    rows = ps.executeUpdate();
+                }
+                try (PreparedStatement ps = c.prepareStatement("UPDATE lifestyle_preferences SET wake_time=?, sleep_time=?, alcohol_pref=?, "
+                + "updated_at=CURRENT_TIMESTAMP WHERE email=?")){
+                    ps.setString(1, p.wakeTime());
+                    ps.setString(2, p.sleepTime());
+                    ps.setString(3, p.alcoholPref());
+                    ps.setString(4, key);
+                    ps.executeUpdate();
+                }
+                c.commit();
+                return  rows > 0;
+            } catch (SQLException e) {
+                c.rollback();
+                throw e;
+            }
+        }
+    }
+    /**
      * Trim an e-mail address and make it lowercase, matching how {@code UserDao} stores e-mails.
      * The session may hold the address exactly as the user typed it.
      *
