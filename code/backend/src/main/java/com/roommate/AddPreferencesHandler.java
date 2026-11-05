@@ -12,18 +12,34 @@ import com.google.gson.JsonParser;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
+/**
+ * 
+ * AddPreferencesHandler
+ */
 final class AddPreferencesHandler {
 
     private final UserDao users;
     private final SessionStore sessions;
     private final PreferencesDatabase preferences;
 
+    /**
+     * An instance of a handler of the preference database. It tracks sessions, preferences, and users.
+     * @param users Users UserDao
+     * @param sessions The current sessions
+     * @param preferences The object of the database of preferences
+     */
     AddPreferencesHandler(UserDao users, SessionStore sessions, PreferencesDatabase preferences) {
         this.users = users;
         this.sessions = sessions;
         this.preferences = preferences;
     }
 
+    /**
+     * Handle the preferences API
+     * @param api The API handler
+     * @param exchange The http exchange request
+     * @throws Exception May throw an exception when a network error occurs
+     */
     void handle(ApiHandler api, HttpExchange exchange) throws Exception {
         if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
             api.sendJson(exchange, 405, api.error("Use POST for this endpoint"));
@@ -42,7 +58,7 @@ final class AddPreferencesHandler {
             return;
         }
 
-        JsonObject body = readBody(exchange);
+        JsonObject body = ApiHandler.readBody(exchange);
         String firstName = requiredString(body, "firstName");
         String lastName = requiredString(body, "lastName");
         String major = requiredString(body, "major");
@@ -89,6 +105,22 @@ final class AddPreferencesHandler {
         api.sendJson(exchange, 200, response);
     }
 
+    /**
+     * Store the user preference into the database
+     * @param userId
+     * @param firstName
+     * @param lastName
+     * @param major
+     * @param dorm
+     * @param roomType
+     * @param age
+     * @param gender
+     * @param sameGenderPref
+     * @param wakeTime
+     * @param sleepTime
+     * @param alcoholPref
+     * @throws SQLException
+     */
     private void save(long userId, String firstName, String lastName, String major, String dorm,
             String roomType, String age, String gender, boolean sameGenderPref, String wakeTime,
             String sleepTime, String alcoholPref) throws SQLException {
@@ -129,6 +161,12 @@ final class AddPreferencesHandler {
         }
     }
 
+    /**
+     * Get the key out of the value of the JsonObject that came from an http request.
+     * @param body The json body
+     * @param key The key to get the value out of
+     * @return The value
+     */
     private String requiredString(JsonObject body, String key) {
         if (body == null || !body.has(key) || !body.get(key).isJsonPrimitive()
                 || !body.getAsJsonPrimitive(key).isString()) {
@@ -138,6 +176,12 @@ final class AddPreferencesHandler {
         return value.isEmpty() ? null : value;
     }
 
+    /**
+     * Get the session cookie of a user
+     * @param exchange The http request
+     * @param key The key
+     * @return The session cookie of the user
+     */
     private String readCookie(HttpExchange exchange, String key) {
         Headers headers = exchange.getRequestHeaders();
         String cookieHeader = headers.getFirst("Cookie");
@@ -154,10 +198,4 @@ final class AddPreferencesHandler {
         return null;
     }
 
-    private JsonObject readBody(HttpExchange exchange) throws IOException {
-        try (InputStream in = exchange.getRequestBody()) {
-            String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-            return raw.isBlank() ? new JsonObject() : JsonParser.parseString(raw).getAsJsonObject();
-        }
-    }
 }

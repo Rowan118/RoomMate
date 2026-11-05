@@ -9,14 +9,28 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
 
+/**
+ * 
+ * RegisterHandler
+ */
 final class RegisterHandler {
 
     private final UserDao users;
 
+    /**
+     * A RegisterHandler instance
+     * @param users UserDao of users
+     */
     RegisterHandler(UserDao users) {
         this.users = users;
     }
 
+    /**
+     * Handle API requests regarding signing up.
+     * @param api ApiHandler instance
+     * @param exchange Http request
+     * @throws Exception May throw an exception if an unexpected network error occurs.
+     */
     void handle(ApiHandler api, HttpExchange exchange) throws Exception {
         if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
             api.sendJson(exchange, 405, api.error("Use POST for this endpoint"));
@@ -54,6 +68,12 @@ final class RegisterHandler {
         api.sendJson(exchange, 201, api.success("Account created"));
     }
 
+    /**
+     * Read http request body and format it in json.
+     * @param exchange The http request
+     * @return A Json object that contains the info of the http request.
+     * @throws IOException May throw an error if an unexpected error occurs parsing the http request.
+     */
     private JsonObject readBody(HttpExchange exchange) throws IOException {
         try (InputStream in = exchange.getRequestBody()) {
             String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
@@ -67,6 +87,11 @@ final class RegisterHandler {
             : null;
     }
 
+    /**
+     * Check if the incoming password is valid.
+     * @param password Raw password String.
+     * @return True if it's a valid password.
+     */
     private String validatePassword(String password) {
         if (password == null || password.length() < 10) {
             return "Password must be at least 10 characters long";

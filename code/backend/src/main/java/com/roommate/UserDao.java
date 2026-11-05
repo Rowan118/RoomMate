@@ -38,6 +38,12 @@ public class UserDao {
         }
     }
 
+    /**
+     * Get the user's ID from their e-mail address.
+     * @param email Email address
+     * @return The user's ID
+     * @throws SQLException May occur if the SQL operation fails.
+     */
     public Long findUserIdByEmail(String email) throws SQLException {
         String sql = "SELECT id FROM users WHERE email = ?";
         try (Connection conn = db.connect();

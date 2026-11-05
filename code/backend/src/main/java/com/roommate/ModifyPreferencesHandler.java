@@ -8,22 +8,26 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
 
+/**
+ * 
+ * ModifyPreferencesHandler
+ */
 final class ModifyPreferencesHandler {
 
+
+    /**
+     * Handle the preferences API
+     * @param api The API handler
+     * @param exchange The http exchange request
+     * @throws Exception May throw an exception when a network error occurs
+     */
     void handle(ApiHandler api, HttpExchange exchange) throws Exception {
         if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
             api.sendJson(exchange, 405, api.error("Use GET for this endpoint"));
             return;
         }
 
-        JsonObject body = readBody(exchange);
+        JsonObject body = ApiHandler.readBody(exchange);
         api.sendJson(exchange, 501, api.error("handleModifyPreferences recieved:\n" + body));
-    }
-
-    private JsonObject readBody(HttpExchange exchange) throws IOException {
-        try (InputStream in = exchange.getRequestBody()) {
-            String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-            return raw.isBlank() ? new JsonObject() : JsonParser.parseString(raw).getAsJsonObject();
-        }
     }
 }
