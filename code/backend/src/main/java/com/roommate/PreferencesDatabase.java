@@ -4,11 +4,32 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.google.gson.JsonObject;
+
 /**
  * PreferencesDatabase
  */
 public class PreferencesDatabase extends Database {
     
+    public record Preferences(String firstName, String lastName, String major, String dorm, String gender, String roomType, boolean sameGenderPref, String ageRange,
+        String wakeTime, String sleepTime, String alcoholPref){
+            public JsonObject toJson(){
+                JsonObject o = new JsonObject();
+                o.addProperty("ok", true);
+                o.addProperty("firstname", firstName);
+                o.addProperty("lastname", lastName);
+                o.addProperty("major", major);
+                o.addProperty("dorm", dorm);
+                o.addProperty("gender", gender);
+                o.addProperty("roomtype", roomType);
+                o.addProperty("sameGenderPref", sameGenderPref ? "yes" : "no");
+                o.addProperty("ageRange", ageRange);
+                o.addProperty("wakeTime", wakeTime);
+                o.addProperty("sleepTime", sleepTime);
+                o.addProperty("alcoholPref", alcoholPref);
+                return o;
+            }
+        }
     /**
      * Create a new student preferences SQLite database.
      * Contains the user's e-mail along with a plethora of user preferences for which dorm to be selected for.
