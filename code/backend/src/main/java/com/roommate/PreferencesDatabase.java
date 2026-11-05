@@ -175,7 +175,7 @@ public class PreferencesDatabase extends Database {
 
     /**
      * Update the editable fields of an existing profile.
-     * The dorm, gender, and room type are deliberately not touched here; the
+     * The dorm, gender, and room type are deliberately not touched here as they are blocked. The
      * {@code lock_placement} trigger also blocks them at the database level.
      *
      * @param email The user's e-mail address (any casing).
@@ -214,6 +214,34 @@ public class PreferencesDatabase extends Database {
                 throw e;
             }
         }
+    }
+
+    /**
+     * Load a saved profile by e-mail, joining both tables.
+     * Basically reads each column by name and turns the stored 0 or 1 into true or false.
+     * @param email The user's e-mail address (any casing).
+     * @return The saved preferences, or null if that e-mail hasn't submitted the form.
+     * @throws SQLException If the database query fails.
+     */
+    public Preferences find(String email) throws SQLException {
+        String sql = """
+            SELECT p.first_name, p.last_name, p.major, p.dorm, p.gender, p.room_type,
+            p.same_gender_pref, p.age_range, l.wake_time, l.sleep_time, l.alcohol_pref
+            FROM placement_profile p
+            JOIN lifestyle_preferences l ON l.email = p.email
+            WHERE p.email = ?
+            """;
+            try (Connection c = connect(); PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setString(1, normalize(email));
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) return null;
+                    return new Preferences(rs.getString("first_name"), rs.getString("last_name"), rs.getString("major"),
+                        rs.getString("dorm"), rs.getString("gender"), rs.getString("room_type"),
+                        rs.getInt("same_gender_pref") == 1,
+                        rs.getString("age_range"), rs.getString("wake_time"),
+                        rs.getString("sleep_time"), rs.getString("alcohol_pref"));
+                }
+            }
     }
     /**
      * Trim an e-mail address and make it lowercase, matching how {@code UserDao} stores e-mails.
