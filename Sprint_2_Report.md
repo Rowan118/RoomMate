@@ -6,12 +6,11 @@ points.
 **Demo Video Link:** [Include awalkthrough of the sprint’s progress as per shared
 video template. Upload to YouTube, keep it unlisted and share its link here]
 ## 1. Work Completed
-- **RA accounts:** Ability to create an RA account if you have a registered RA email — [GitHub issue link]
-- **Account sessions:** [Brief description] — [GitHub issue link]
-- **More efficient database storage:** [Brief description] — [GitHub issue link]
-- **Preference database:** [Brief description] — [GitHub issue link]
-- **Account sessions:** [Brief description] — [GitHub issue link]
-- **Logout function:** [Brief description] — [GitHub issue link]
+- **RA accounts:** Ability to create an RA account if you have a registered RA email — https://github.com/Rowan118/RoomMate/issues/23
+- **More efficient database storage:** Database handling refactored to be done more efficiently and logically — https://github.com/Rowan118/RoomMate/issues/32
+- **Preference database:** Ability to store submitted preferences in the backend — https://github.com/Rowan118/RoomMate/issues/7
+- **Account sessions:** Ability to keep track of which user is logged in — https://github.com/Rowan118/RoomMate/issues/31
+- **Logout function:** Ability to log out of an account and end the session — https://github.com/Rowan118/RoomMate/issues/39
 ## 2. Incomplete Work
 | Task | Reason Incomplete | Next Step |
 | Modification of preferences | Needed session tracking first | Complete in first week of sprint 3 |
@@ -22,21 +21,17 @@ video template. Upload to YouTube, keep it unlisted and share its link here]
 | Rowan | [Work completed] |
 | Jacob | [Work completed] |
 ## 4. Code for Review
-Link to **2–3 key code files or pull requests** developed during this sprint and
-briefly describe the changes.
-- [File or pull request link] — [What changed]
-- [File or pull request link] — [What changed]
-If no code was developed, write **“Not applicable”** and link to the research,
-design, or setup materials produced instead.
+- https://github.com/Rowan118/RoomMate/pull/25 - Creation of multiple account types
+- https://github.com/Rowan118/RoomMate/pull/37 — Refactor of database storage
 ## 5. Reflection and Next Sprint
-Provide **1–2 bullet points** for each question.
 **What went well?**
-- [Response]
+- Balance between backend-frontend implementation
+- Discussions/communication 
 **What should improve?**
-- [Response]
+- More balanced group contributions
+- Less troubleshooting branch incompatibilities
 **What will you focus on next sprint?**
-- [Response]
+- Modification and evaluation of user preferences
+- ability to change matches after evaluation
+- email verification and result notifications
 ---
-**Before submitting:** Check that all links are accessible, GitHub issues show
-their current status and assigned contributors, and unfinished issues are moved to
-an appropriate future sprint.
