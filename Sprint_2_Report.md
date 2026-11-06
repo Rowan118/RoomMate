@@ -3,8 +3,7 @@
 points.
 **Team/Project Name: RoomMate**
 **Sprint Dates: October 15th - November 5th (3 weeks)**
-**Demo Video Link:** [Include awalkthrough of the sprint’s progress as per shared
-video template. Upload to YouTube, keep it unlisted and share its link here]
+**Demo Video Link:** https://www.youtube.com/watch?v=EQ3Lirpk3cw
 ## 1. Work Completed
 - **RA accounts:** Ability to create an RA account if you have a registered RA email — https://github.com/Rowan118/RoomMate/issues/23
 - **More efficient database storage:** Database handling refactored to be done more efficiently and logically — https://github.com/Rowan118/RoomMate/issues/32
