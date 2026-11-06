@@ -27,7 +27,7 @@ video template. Upload to YouTube, keep it unlisted and share its link here]
 - Resolved merge conflicts
 - Fixed bugs |
 
-| Jacob | [Work completed] |
+| Jacob | Implemented the preference storing in the database |
 ## 4. Code for Review
 - https://github.com/Rowan118/RoomMate/pull/25 - Creation of multiple account types
 - https://github.com/Rowan118/RoomMate/pull/37 — Refactor of database storage
