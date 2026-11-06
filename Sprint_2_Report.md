@@ -1,16 +1,25 @@
 # Sprint 2 Report
 **Submit one report per team.** Keep it to **1–2 pages**, using brief bullet
 points.
+
 **Team/Project Name: RoomMate**
+
 **Sprint Dates: October 15th - November 5th (3 weeks)**
+
 **Demo Video Link:** https://www.youtube.com/watch?v=EQ3Lirpk3cw
+
 ## 1. Work Completed
 - **RA accounts:** Ability to create an RA account if you have a registered RA email — https://github.com/Rowan118/RoomMate/issues/23
 - **More efficient database storage:** Database handling refactored to be done more efficiently and logically — https://github.com/Rowan118/RoomMate/issues/32
+
 - **Preference database:** Ability to store submitted preferences in the backend — https://github.com/Rowan118/RoomMate/issues/7
+
 - **Account sessions:** Ability to keep track of which user is logged in — https://github.com/Rowan118/RoomMate/issues/31
+
 - **Hashing passwords:** Improving security by storing passwords with Argon2I hashing instead of plain text — https://github.com/Rowan118/RoomMate/issues/41
+
 - **Logout function:** Ability to log out of an account and end the session — https://github.com/Rowan118/RoomMate/issues/39
+
 ## 2. Incomplete Work
 | Task | Reason Incomplete | Next Step |
 | Modification of preferences | Needed session tracking first | Complete in first week of sprint 3 |
