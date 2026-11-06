@@ -32,15 +32,22 @@ video template. Upload to YouTube, keep it unlisted and share its link here]
 - https://github.com/Rowan118/RoomMate/pull/25 - Creation of multiple account types
 - https://github.com/Rowan118/RoomMate/pull/37 — Refactor of database storage
 ## 5. Reflection and Next Sprint
+
 **What went well?**
 - Balance between backend-frontend implementation
-- Discussions/communication 
+- Discussions/communication
+
 **What should improve?**
 - More balanced group contributions
 - Less troubleshooting branch incompatibilities
 - More group discussion of code structure to reduce coupling
+
 **What will you focus on next sprint?**
 - Modification and evaluation of user preferences
 - Ability to change matches after evaluation
 - Email verification and result notifications
+- Smarter storing of preference settings
+- Decoupling code
+- Github actions
+- Unit tests
 ---
