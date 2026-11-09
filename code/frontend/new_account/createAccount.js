@@ -52,13 +52,31 @@ submitInput.addEventListener("click", async function () {
     }
 
     if (account.includes("RA")) {
-        //function for testing frontend functionality
-        //remove when backend functionality is implemented
-        const testEmail = "bob.smith@wsu.edu";
-        if (!(email === testEmail)) {
-            error.innerText = "Cannot create an RA account with this email"
+        //access json file with all valid RA emails, and throw error is account is not in that list
+
+        try {
+            const response = await fetch(`${API_BASE}/api/ra_emails`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({email})
+            });
+            if (!response.ok) {
+                error.innerText = "Failed complete check for RA email validity. Please try again later";
+                return false;
+            }
+
+            const emailValid = await response.json();
+
+            if (!emailValid) {
+                error.innerText = "Cannot create an RA account with this email";
+                return false;
+            }
+        }
+        catch (error) {
+            error.innerText = "Failed to fetch RA email list from backend";
             return false;
         }
+
     }
 
     //BACKEND: attempt to fetch email list of RA accounts (just create a couple random emails for demo)
@@ -68,7 +86,7 @@ submitInput.addEventListener("click", async function () {
         const response = await fetch(`${API_BASE}/api/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ account, email, password })
         });
         const data = await response.json();
 

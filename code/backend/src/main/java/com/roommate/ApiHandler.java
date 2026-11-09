@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -22,6 +23,7 @@ public class ApiHandler implements HttpHandler {
 
     private static final Gson GSON = new Gson();
 
+    private final RaEmailHandler raEmailHandler;
     private final RegisterHandler registerHandler;
     private final LoginHandler loginHandler;
     private final SessionHandler sessionHandler;
@@ -36,6 +38,8 @@ public class ApiHandler implements HttpHandler {
      * @param preferences A database to keep track of user preferences.
      */
     public ApiHandler(UserDao users, SessionStore sessions, PreferencesDatabase preferences) {
+        
+        this.raEmailHandler = new RaEmailHandler ();
         this.registerHandler = new RegisterHandler(users);
         this.loginHandler = new LoginHandler(users, sessions);
         this.sessionHandler = new SessionHandler(sessions);
@@ -60,6 +64,7 @@ public class ApiHandler implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
         try {
             switch (path) {
+                case "/api/ra_emails" -> raEmailHandler.handle(this, exchange);
                 case "/api/register" -> registerHandler.handle(this, exchange);
                 case "/api/login" -> loginHandler.handle(this, exchange);
                 case "/api/session" -> sessionHandler.handle(this, exchange);
@@ -84,7 +89,7 @@ public class ApiHandler implements HttpHandler {
      * @param payload The JSON body to serialize to.
      * @throws IOException An IOException may be thrown if writing to the stream fails.
      */
-    void sendJson(HttpExchange exchange, int status, JsonObject payload) throws IOException {
+    void sendJson(HttpExchange exchange, int status, JsonElement payload) throws IOException {
         byte[] bytes = GSON.toJson(payload).getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
         exchange.sendResponseHeaders(status, bytes.length);

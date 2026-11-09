@@ -40,8 +40,9 @@ final class RegisterHandler {
         JsonObject body = readBody(exchange);
         String email = optString(body, "email");
         String password = optString(body, "password");
+        String accountType = optString(body, "account");
 
-        if (email == null || !email.toLowerCase().endsWith("@wsu.edu")) {
+        if (accountType == null || email == null || !email.toLowerCase().endsWith("@wsu.edu")) {
             api.sendJson(exchange, 400, api.error("Not a valid WSU email"));
             return;
         }
@@ -58,7 +59,7 @@ final class RegisterHandler {
         }
 
         try {
-            users.createUser(email, password);
+            users.createUser(email, password, accountType);
         } catch (SQLException e) {
             // The unique constraint may fire if another request registers this email concurrently.
             api.sendJson(exchange, 409, api.error("An account with that email already exists"));

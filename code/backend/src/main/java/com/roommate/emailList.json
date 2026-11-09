@@ -1,0 +1,14 @@
+{
+    "emails": [
+        {
+            "email": "john.smith@wsu.edu",
+            "dorm": "Stimson",
+            "floor": "2"
+        },
+        {
+            "email": "jane.doe@wsu.edu",
+            "dorm": "Regents",
+            "floor": "3"
+        }
+    ]
+}
