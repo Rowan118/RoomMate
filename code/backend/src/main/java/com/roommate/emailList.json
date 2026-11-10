@@ -1,14 +1,220 @@
 {
+    "_comment": "All entries are AI-generated placeholders and are not associated with actual people.",
     "emails": [
         {
-            "email": "john.smith@wsu.edu",
+            "email": "amelia.rose@wsu.edu",
+            "dorm": "Regents",
+            "floor": "1"
+        },
+        {
+            "email": "sophia.lane@wsu.edu",
+            "dorm": "Regents",
+            "floor": "2"
+        },
+        {
+            "email": "isabella.wren@wsu.edu",
+            "dorm": "Regents",
+            "floor": "3"
+        },
+        {
+            "email": "olivia.bell@wsu.edu",
+            "dorm": "Regents",
+            "floor": "4"
+        },
+        {
+            "email": "liam.hart@wsu.edu",
+            "dorm": "Stimson",
+            "floor": "1"
+        },
+        {
+            "email": "noah.reed@wsu.edu",
             "dorm": "Stimson",
             "floor": "2"
         },
         {
-            "email": "jane.doe@wsu.edu",
-            "dorm": "Regents",
+            "email": "ethan.cole@wsu.edu",
+            "dorm": "Stimson",
             "floor": "3"
+        },
+        {
+            "email": "mason.gray@wsu.edu",
+            "dorm": "Stimson",
+            "floor": "4"
+        },
+        {
+            "email": "lucas.ford@wsu.edu",
+            "dorm": "Stimson",
+            "floor": "5"
+        },
+        {
+            "email": "liora.dale@wsu.edu",
+            "dorm": "Rogers",
+            "floor": "2"
+        },
+        {
+            "email": "marlowe.pine@wsu.edu",
+            "dorm": "Rogers",
+            "floor": "3"
+        },
+        {
+            "email": "nori.skye@wsu.edu",
+            "dorm": "Rogers",
+            "floor": "4"
+        },
+        {
+            "email": "oriana.wren@wsu.edu",
+            "dorm": "Rogers",
+            "floor": "5"
+        },
+        {
+            "email": "junia.fen@wsu.edu",
+            "dorm": "Rogers",
+            "floor": "6"
+        },
+        {
+            "email": "korin.ale@wsu.edu",
+            "dorm": "Rogers",
+            "floor": "7"
+        },
+        {
+            "email": "luma.cairn@wsu.edu",
+            "dorm": "Rogers",
+            "floor": "8"
+        },
+        {
+            "email": "maelin.fox@wsu.edu",
+            "dorm": "Rogers",
+            "floor": "9"
+        },
+        {
+            "email": "nerin.oak@wsu.edu",
+            "dorm": "Rogers",
+            "floor": "10"
+        },
+        {
+            "email": "orelia.star@wsu.edu",
+            "dorm": "Rogers",
+            "floor": "11"
+        },
+        {
+            "email": "pippa.grove@wsu.edu",
+            "dorm": "McEachern",
+            "floor": "1"
+        },
+        {
+            "email": "quinley.rain@wsu.edu",
+            "dorm": "McEachern",
+            "floor": "2"
+        },
+        {
+            "email": "romilly.sage@wsu.edu",
+            "dorm": "McEachern",
+            "floor": "3"
+        },
+        {
+            "email": "sable.frost@wsu.edu",
+            "dorm": "McEachern",
+            "floor": "4"
+        },
+        {
+            "email": "tamsin.vale@wsu.edu",
+            "dorm": "McEachern",
+            "floor": "5"
+        },
+        {
+            "email": "una.bloom@wsu.edu",
+            "dorm": "McCrosky",
+            "floor": "1"
+        },
+        {
+            "email": "vesper.hollow@wsu.edu",
+            "dorm": "McCrosky",
+            "floor": "2"
+        },
+        {
+            "email": "willa.sol@wsu.edu",
+            "dorm": "McCrosky",
+            "floor": "3"
+        },
+        {
+            "email": "zinnia.tide@wsu.edu",
+            "dorm": "Streit Perham",
+            "floor": "1"
+        },
+        {
+            "email": "albie.clover@wsu.edu",
+            "dorm": "Streit Perham",
+            "floor": "2"
+        },
+        {
+            "email": "beckett.lark@wsu.edu",
+            "dorm": "Streit Perham",
+            "floor": "3"
+        },
+        {
+            "email": "calla.birch@wsu.edu",
+            "dorm": "Streit Perham",
+            "floor": "4"
+        },
+        {
+            "email": "devon.flume@wsu.edu",
+            "dorm": "Streit Perham",
+            "floor": "5"
+        },
+        {
+            "email": "ziggy.hall@wsu.edu",
+            "dorm": "Streit Perham",
+            "floor": "6"
+        },
+        {
+            "email": "foxley.mist@wsu.edu",
+            "dorm": "Orton",
+            "floor": "2"
+        },
+        {
+            "email": "galen.pebble@wsu.edu",
+            "dorm": "Orton",
+            "floor": "3"
+        },
+        {
+            "email": "hattie.rune@wsu.edu",
+            "dorm": "Orton",
+            "floor": "4"
+        },
+        {
+            "email": "ivo.thistle@wsu.edu",
+            "dorm": "Orton",
+            "floor": "5"
+        },
+        {
+            "email": "jory.winter@wsu.edu",
+            "dorm": "Orton",
+            "floor": "6"
+        },
+        {
+            "email": "keely.ash@wsu.edu",
+            "dorm": "Orton",
+            "floor": "7"
+        },
+        {
+            "email": "linden.rose@wsu.edu",
+            "dorm": "Orton",
+            "floor": "8"
+        },
+        {
+            "email": "merritt.dawn@wsu.edu",
+            "dorm": "Orton",
+            "floor": "9"
+        },
+        {
+            "email": "nella.quill@wsu.edu",
+            "dorm": "Orton",
+            "floor": "10"
+        },
+        {
+            "email": "oswin.ember@wsu.edu",
+            "dorm": "Orton",
+            "floor": "11"
         }
     ]
 }
