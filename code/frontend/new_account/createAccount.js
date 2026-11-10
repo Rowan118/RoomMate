@@ -18,36 +18,13 @@ submitInput.addEventListener("click", async function () {
     const index = accountInput.selectedIndex;
     const account = accountInput.options[index].value;
 
+    // --- BASIC EMAIL VALIDATION --- //
+
+    //Ensures everyone enters a valid, current WSU email address.
+    //In addition, RAs must have an email that is listed as a valid RA email
+
     if (!email.includes("@wsu.edu")) {
         error.innerText = "Not a valid WSU email";
-        return false;
-    }
-
-    //TODO: email verification for RA and student accounts
-    //RA will be a list of valid emails for making RA accounts (since the school likely tracks that anyway)
-    //students will receive an email with an OTP (probably a psuedorandom number)
-    //email will also be used when we send the results
-
-    if (password.length < 10) {
-        error.innerText = "Password must be at least 10 characters long";
-        return false;
-    }
-    if (password == "Securepassword3") {
-        error.innerText = "Using the example as your password is not allowed";
-        return false;
-    }
-
-    //tests for password
-    if (!/[a-z]/.test(password)) {
-        error.innerText = "Password must contain at least one lowercase letter";
-        return false;
-    }
-    if (!/[A-Z]/.test(password)) {
-        error.innerText = "Password must contain at least one capital letter";
-        return false;
-    }
-    if (!/[0-9]/.test(password)) {
-        error.innerText = "Password must contain at least one number";
         return false;
     }
 
@@ -76,11 +53,41 @@ submitInput.addEventListener("click", async function () {
             error.innerText = "Failed to fetch RA email list from backend";
             return false;
         }
+    }    
 
+    //TODO: email verification for RA and student accounts
+    //students will receive an email with an OTP (probably a psuedorandom number)
+    //email will also be used when we send the results
+
+    // --- BASIC PASSWORD VALIDATION --- //
+
+    //Ensures that any chosen password is reasonably secure
+    //All password will be 10 or more chars, have at least one capital and lowercase letter, and contain a number
+
+    //Once we finish most of the testing, I'll add a symbol requirement as well
+
+    if (password.length < 10) {
+        error.innerText = "Password must be at least 10 characters long";
+        return false;
+    }
+    if (password == "Securepassword3") {
+        error.innerText = "Using the example as your password is not allowed";
+        return false;
     }
 
-    //BACKEND: attempt to fetch email list of RA accounts (just create a couple random emails for demo)
-    //if possible, return the specific message that its not a valid email for RAs
+    //tests for password
+    if (!/[a-z]/.test(password)) {
+        error.innerText = "Password must contain at least one lowercase letter";
+        return false;
+    }
+    if (!/[A-Z]/.test(password)) {
+        error.innerText = "Password must contain at least one capital letter";
+        return false;
+    }
+    if (!/[0-9]/.test(password)) {
+        error.innerText = "Password must contain at least one number";
+        return false;
+    }
 
     try {
         const response = await fetch(`${API_BASE}/api/register`, {
@@ -96,7 +103,8 @@ submitInput.addEventListener("click", async function () {
         }
 
         window.location.href = "../homepage/homepage.html";
-    } catch (err) {
+    } 
+    catch (err) {
         error.innerText = "Could not reach the server. Is the backend running?";
     }
 
