@@ -42,7 +42,12 @@ final class RegisterHandler {
         String password = optString(body, "password");
         String accountType = optString(body, "account");
 
-        if (accountType == null || email == null || !email.toLowerCase().endsWith("@wsu.edu")) {
+        if (accountType == null || accountType.toLowerCase().equals("none")) {
+            api.sendJson(exchange, 400, api.error("Please select an account type"));
+            return;
+        }
+
+        if (email == null || !email.toLowerCase().endsWith("@wsu.edu")) {
             api.sendJson(exchange, 400, api.error("Not a valid WSU email"));
             return;
         }
