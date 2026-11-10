@@ -8,6 +8,8 @@
   <body>
     <h1>Account creation</h1>
 
+    <p id="error" style="color: red;"></p>
+
     <label for="accountType">Are you a student or RA?</label><br>
       <select name="accountType" id="accountType" required>
         <option value="none"></option> 
@@ -26,8 +28,6 @@
         <input type="password" id="password" placeholder="Securepassword3"><br><br>
         <button type="button" id="submit">Create Account</button>
     </div>
-
-    <p id="error" style="color: red;"></p>
 
     <script src="createAccount.js"></script>
 

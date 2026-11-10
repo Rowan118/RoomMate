@@ -18,6 +18,11 @@ submitInput.addEventListener("click", async function () {
     const index = accountInput.selectedIndex;
     const account = accountInput.options[index].value;
 
+    if (account === "none") {
+        error.innerText = "Account type must be selected";
+        return false;
+    }
+
     // --- BASIC EMAIL VALIDATION --- //
 
     //Ensures everyone enters a valid, current WSU email address.
