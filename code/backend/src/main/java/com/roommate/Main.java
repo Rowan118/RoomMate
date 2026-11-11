@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
-        String loginDbPath = System.getenv().getOrDefault("DB_PATH", "roommate.db");
+        String loginDbPath = System.getenv().getOrDefault("DB_PATH", "logins.db");
         String preferenceDbPath = System.getenv().getOrDefault("DB_PATH", "preferences.db");
 
         // Initialize databases

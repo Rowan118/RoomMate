@@ -32,6 +32,61 @@ submitInput.addEventListener("click", async function() {
   const sleepTime = sleepTimeInput.value;
   const alcoholPref = alcoholPrefInput.value;
 
+  if (!firstName) {
+    error.innerText = "First name field cannot be empty";
+    return false;
+  }
+
+  if (!lastName) {
+    error.innerText = "Last name field cannot be empty";
+    return false;
+  }
+
+  if (!major) {
+    error.innerText = "Major field cannot be empty";
+    return false;
+  }
+
+  if (dormPref === "none") {
+    error.innerText = "Please select a dorm preference";
+    return false;
+  }
+
+  if (roomType === "none") {
+    error.innerText = "Please select a room type preference";
+    return false;
+  }
+
+  if (age === "none") {
+    error.innerText = "Please select an age preference";
+    return false;
+  }
+
+  if (gender === "none") {
+    error.innerText = "Please select a gender preference";
+    return false;
+  }
+
+  if (sameGenderPref === "none") {
+    error.innerText = "Please select a same gender preference";
+    return false;
+  }
+
+  if (wakeTime === "none") {
+    error.innerText = "Please select a wake time preference";
+    return false;
+  }
+
+  if (sleepTime === "none") {
+    error.innerText = "Please select a sleep time preference";
+    return false;
+  }
+
+  if (alcoholPref === "none") {
+    error.innerText = "Please select an alcohol preference";
+    return false;
+  }
+
   //basic checks to ensure information isn't contradicting
   //helps simplify the matching process in the backend
 

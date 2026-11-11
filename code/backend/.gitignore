@@ -1,5 +1,4 @@
 target/
 dependency-reduced-pom.xml
-roommate.db
-preferences.db
+*.db
 apache-maven-3.10.0/

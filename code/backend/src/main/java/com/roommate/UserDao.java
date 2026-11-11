@@ -59,14 +59,16 @@ public class UserDao {
      * Create a new user row in the database.
      * @param email The new user's e-mail address.
      * @param rawPassword The new user's raw password text (this will then be stored as a hash).
+     * @param accountType Specifies whether a user is a student or RA.
      * @throws SQLException May throw an SQLException if the database unexpectedly fails.
      */
-    public void createUser(String email, String rawPassword) throws SQLException {
-        String sql = "INSERT INTO users (email, password) VALUES (?, ?)";
+    public void createUser( String email, String rawPassword, String accountType) throws SQLException {
+        String sql = "INSERT INTO users (email, password, account_type) VALUES (?, ?, ?)";
         try (Connection conn = db.connect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, normalizeEmail(email));
             ps.setString(2, passwords.hash(rawPassword));
+            ps.setString(3, accountType);
             ps.executeUpdate();
         }
     }

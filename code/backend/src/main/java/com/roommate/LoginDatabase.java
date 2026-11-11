@@ -27,10 +27,11 @@ public class LoginDatabase extends Database {
     void init() {
         String sql = """
             CREATE TABLE IF NOT EXISTS users (
-                id         INTEGER PRIMARY KEY AUTOINCREMENT,
-                email      TEXT NOT NULL UNIQUE COLLATE NOCASE,
-                password   TEXT NOT NULL,
-                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_type    TEXT NOT NULL,
+                email           TEXT NOT NULL UNIQUE COLLATE NOCASE,
+                password        TEXT NOT NULL,
+                created_at      TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
             """;
 
