@@ -14,7 +14,10 @@ public class Main {
         String configurationPath = System.getenv().getOrDefault("CONF_DIR", "configuration");
 
         // Debug path prints
-        System.out.println("cwd: " + System.getenv().get("PWD") + "\nconfig path: " + configurationPath);
+        System.out.println("cwd: " + System.getenv().get("PWD") +
+            "\nconfig path: " + configurationPath + 
+            "\nlogin database path: " + loginDbPath + 
+            "\npreferences database path: " + preferenceDbPath);
 
         // Initialize databases
         Database loginDb = new LoginDatabase(loginDbPath);
