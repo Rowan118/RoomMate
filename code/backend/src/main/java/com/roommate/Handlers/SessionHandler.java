@@ -33,7 +33,7 @@ final class SessionHandler {
             return;
         }
 
-        String sessionId = readCookie(exchange, "sessionId");
+        String sessionId = ApiHandler.readCookie(exchange, "sessionId");
         String email = sessions.getEmail(sessionId);
         if (email == null) {
             api.sendJson(exchange, 401, api.error("Not logged in"));
@@ -44,27 +44,5 @@ final class SessionHandler {
         payload.addProperty("ok", true);
         payload.addProperty("email", email);
         api.sendJson(exchange, 200, payload);
-    }
-
-    /**
-     * Read a cookie.
-     * @param exchange Http request
-     * @param key The key
-     * @return Session cookie
-     */
-    private String readCookie(HttpExchange exchange, String key) {
-        Headers headers = exchange.getRequestHeaders();
-        String cookieHeader = headers.getFirst("Cookie");
-        if (cookieHeader == null) {
-            return null;
-        }
-
-        for (String part : cookieHeader.split(";")) {
-            String trimmed = part.trim();
-            if (trimmed.startsWith(key + "=")) {
-                return trimmed.substring((key + "=").length());
-            }
-        }
-        return null;
     }
 }

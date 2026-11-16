@@ -32,7 +32,7 @@ final class LogoutHandler {
             return;
         }
 
-        String sessionId = readCookie(exchange, "sessionId");
+        String sessionId = ApiHandler.readCookie(exchange, "sessionId");
         sessions.removeSession(sessionId);
 
         exchange.getResponseHeaders().add(
@@ -41,27 +41,5 @@ final class LogoutHandler {
         );
 
         api.sendJson(exchange, 200, api.success("Logged out"));
-    }
-
-    /**
-     * Get a cookie from an http request and a key.
-     * @param exchange Http request.
-     * @param key Key
-     * @return Cookie String
-     */
-    private String readCookie(HttpExchange exchange, String key) {
-        Headers headers = exchange.getRequestHeaders();
-        String cookieHeader = headers.getFirst("Cookie");
-        if (cookieHeader == null) {
-            return null;
-        }
-
-        for (String part : cookieHeader.split(";")) {
-            String trimmed = part.trim();
-            if (trimmed.startsWith(key + "=")) {
-                return trimmed.substring((key + "=").length());
-            }
-        }
-        return null;
     }
 }

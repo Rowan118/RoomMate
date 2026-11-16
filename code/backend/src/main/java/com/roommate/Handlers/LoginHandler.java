@@ -56,7 +56,7 @@ final class LoginHandler {
             return;
         }
 
-        sessions.removeSession(readCookie(exchange, "sessionId"));
+        sessions.removeSession(ApiHandler.readCookie(exchange, "sessionId"));
         String sessionId = sessions.createSession(email);
         exchange.getResponseHeaders().add(
             "Set-Cookie",
@@ -97,19 +97,19 @@ final class LoginHandler {
      * @param key Key
      * @return Cookie String
      */
-    private String readCookie(HttpExchange exchange, String key) {
-        Headers headers = exchange.getRequestHeaders();
-        String cookieHeader = headers.getFirst("Cookie");
-        if (cookieHeader == null) {
-            return null;
-        }
+    // private String readCookie(HttpExchange exchange, String key) {
+    //     Headers headers = exchange.getRequestHeaders();
+    //     String cookieHeader = headers.getFirst("Cookie");
+    //     if (cookieHeader == null) {
+    //         return null;
+    //     }
 
-        for (String part : cookieHeader.split(";")) {
-            String trimmed = part.trim();
-            if (trimmed.startsWith(key + "=")) {
-                return trimmed.substring((key + "=").length());
-            }
-        }
-        return null;
-    }
+    //     for (String part : cookieHeader.split(";")) {
+    //         String trimmed = part.trim();
+    //         if (trimmed.startsWith(key + "=")) {
+    //             return trimmed.substring((key + "=").length());
+    //         }
+    //     }
+    //     return null;
+    // }
 }

@@ -49,7 +49,7 @@ final class AddPreferencesHandler {
             return;
         }
 
-        String email = sessions.getEmail(readCookie(exchange, "sessionId"));
+        String email = sessions.getEmail(ApiHandler.readCookie(exchange, "sessionId"));
         if (email == null) {
             api.sendJson(exchange, 401, api.error("Not logged in"));
             return;
@@ -177,28 +177,6 @@ final class AddPreferencesHandler {
         }
         String value = body.get(key).getAsString().trim();
         return value.isEmpty() ? null : value;
-    }
-
-    /**
-     * Get the session cookie of a user
-     * @param exchange The http request
-     * @param key The key
-     * @return The session cookie of the user
-     */
-    private String readCookie(HttpExchange exchange, String key) {
-        Headers headers = exchange.getRequestHeaders();
-        String cookieHeader = headers.getFirst("Cookie");
-        if (cookieHeader == null) {
-            return null;
-        }
-
-        for (String part : cookieHeader.split(";")) {
-            String trimmed = part.trim();
-            if (trimmed.startsWith(key + "=")) {
-                return trimmed.substring((key + "=").length());
-            }
-        }
-        return null;
     }
 
 }

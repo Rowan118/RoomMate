@@ -158,4 +158,26 @@ public class ApiHandler implements HttpHandler {
             return raw.isBlank() ? new JsonObject() : JsonParser.parseString(raw).getAsJsonObject();
         }
     }
+
+    /**
+     * Get a cookie from an http request and a key.
+     * @param exchange Http request.
+     * @param key Key
+     * @return Cookie String
+     */
+    static protected String readCookie(HttpExchange exchange, String key) {
+        Headers headers = exchange.getRequestHeaders();
+        String cookieHeader = headers.getFirst("Cookie");
+        if (cookieHeader == null) {
+            return null;
+        }
+
+        for (String part : cookieHeader.split(";")) {
+            String trimmed = part.trim();
+            if (trimmed.startsWith(key + "=")) {
+                return trimmed.substring((key + "=").length());
+            }
+        }
+        return null;
+    }
 }
