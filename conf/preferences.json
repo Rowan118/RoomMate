@@ -1,0 +1,62 @@
+{
+    "first_name": {
+        "label": "First name",
+        "type": "text",
+        "required": true
+    },
+    "last_name": {
+        "label": "Last name",
+        "type": "text",
+        "required": true
+    },
+    "major": {
+        "label": "Major",
+        "type": "text",
+        "required": true
+    },
+    "dorm": {
+        "label": "Preferred residence hall",
+        "type": "select",
+        "options": ["Regents", "Stimson", "Rogers", "McEachern", "McCrosky", "Streit Perham", "Orton"],
+        "required": true
+    },
+    "room_type": {
+        "label": "Would you prefer a roommate or single room?",
+        "options": ["Single", "Double"],
+        "required": true
+    },
+    "age": {
+        "label": "What age range are you in?",
+        "type": "select",
+        "options": ["<=18", "19-20", "21+"],
+        "required": true
+    },
+    "gender": {
+        "label": "What gender do you identify as?",
+        "type": "select",
+        "options": ["Man", "Woman", "Non-Binary"],
+        "required": true
+    },
+    "prefers_same_gender": {
+        "Label": "Would you rather only share a room with someone of the same gender?",
+        "type": "boolean",
+        "required": true
+    },
+    "wake_time": {
+        "Label": "What time do you generally wake up around?",
+        "type": "option",
+        "options": ["Before 7AM", "Between 7AM-9AM", "Between 9AM-12PM", "Between 12PM-3PM", "After 3PM"],
+        "required": true
+    },
+    "sleep_time": {
+        "Label": "What time do you generally fall sleep around?",
+        "type": "option",
+        "options": ["Before 9PM", "Between 9PM-11PM", "Between 11PM-1AM", "Between 1AM-3AM", "After 3AM"],
+        "required": true
+    },
+    "alcohol_preference": {
+        "Label": "Would you want to share a room with someone who drinks alcohol?",
+        "type": "boolean",
+        "required": true
+    }
+}

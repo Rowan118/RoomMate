@@ -11,6 +11,8 @@ public class Main {
         int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
         String loginDbPath = System.getenv().getOrDefault("DB_PATH", "logins.db");
         String preferenceDbPath = System.getenv().getOrDefault("DB_PATH", "preferences.db");
+        String configurationPath = System.getenv().getOrDefault("ROOMMATE_CONFIGURATION_PATH", "configuration");
+        System.out.println("cwd: " + System.getenv().get("PWD") + "\nconfig path: " + configurationPath);
 
         // Initialize databases
         Database loginDb = new LoginDatabase(loginDbPath);
