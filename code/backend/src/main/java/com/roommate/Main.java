@@ -9,9 +9,11 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
-        String loginDbPath = System.getenv().getOrDefault("DB_PATH", "logins.db");
-        String preferenceDbPath = System.getenv().getOrDefault("DB_PATH", "preferences.db");
-        String configurationPath = System.getenv().getOrDefault("ROOMMATE_CONFIGURATION_PATH", "configuration");
+        String loginDbPath = System.getenv().getOrDefault("LOGIN_DB", "logins.db");
+        String preferenceDbPath = System.getenv().getOrDefault("PREF_DB", "preferences.db");
+        String configurationPath = System.getenv().getOrDefault("CONF_DIR", "configuration");
+
+        // Debug path prints
         System.out.println("cwd: " + System.getenv().get("PWD") + "\nconfig path: " + configurationPath);
 
         // Initialize databases
