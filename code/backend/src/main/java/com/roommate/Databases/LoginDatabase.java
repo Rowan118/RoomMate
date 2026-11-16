@@ -24,6 +24,7 @@ public class LoginDatabase extends Database {
      * @see com.roommate.Databases.Database#init()
      */
     @Override
+    public
     void init() {
         String sql = """
             CREATE TABLE IF NOT EXISTS users (
