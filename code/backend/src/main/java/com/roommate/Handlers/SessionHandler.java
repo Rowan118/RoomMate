@@ -1,7 +1,8 @@
-package com.roommate;
+package com.roommate.Handlers;
 
 import com.sun.net.httpserver.Headers;
 import com.google.gson.JsonObject;
+import com.roommate.SessionStore;
 import com.sun.net.httpserver.HttpExchange;
 
 /**

@@ -1,4 +1,4 @@
-package com.roommate;
+package com.roommate.Databases;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -20,9 +20,10 @@ public class PreferencesDatabase extends Database {
 
     /**    (non-Javadoc)
      * 
-     * @see com.roommate.Database#init()
+     * @see com.roommate.Databases.Database#init()
      */
-    @Override 
+    @Override
+    public 
     void init() {
         String[] sql = {
             """

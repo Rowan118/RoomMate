@@ -1,4 +1,4 @@
-package com.roommate;
+package com.roommate.Handlers;
 
 import java.io.IOException;
 import java.io.InputStream;

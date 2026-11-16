@@ -1,4 +1,4 @@
-package com.roommate;
+package com.roommate.Databases;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -26,7 +26,7 @@ public abstract class Database {
     /**
      * Create a new database prepopulated with columns.
      */
-    abstract void init();
+    public abstract void init();
 
     /**
      * Attempt to connect to the SQLite database.

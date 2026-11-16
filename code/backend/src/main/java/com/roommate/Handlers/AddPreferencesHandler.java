@@ -1,4 +1,4 @@
-package com.roommate;
+package com.roommate.Handlers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +9,9 @@ import java.sql.SQLException;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.roommate.SessionStore;
+import com.roommate.UserDao;
+import com.roommate.Databases.PreferencesDatabase;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 

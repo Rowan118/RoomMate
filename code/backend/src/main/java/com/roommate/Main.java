@@ -1,5 +1,9 @@
 package com.roommate;
 
+import com.roommate.Databases.Database;
+import com.roommate.Databases.LoginDatabase;
+import com.roommate.Databases.PreferencesDatabase;
+import com.roommate.Handlers.ApiHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.net.InetSocketAddress;
