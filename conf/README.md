@@ -18,6 +18,8 @@ Determines what dorms are available at your university.
 ## preferences.json
 Determines what questions students will be asked and how data is stored within the database.
 
+**YOU MUST MANUALLY MIGRATE OR DELETE YOUR PREFERENCES DATABASE AFTER CHANGING OPTIONS**
+
 The key is how the database and APIs will recognize the name of the student preference.
 You must provide a label with the "label" option that will be the text that is presented to students on the website.
 **Supported types**:
