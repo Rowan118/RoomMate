@@ -25,12 +25,12 @@ import com.sun.net.httpserver.HttpHandler;
  * Handle API requests
  * ApiHandler
  */
-public class ApiHandler implements HttpHandler {
+public class ApiRouter implements HttpHandler {
 
     private static final Gson GSON = new Gson();
 
     // Keeps track of what HTTP requests go to which handler.
-    private final Map<String, ApiRoute> routes = new HashMap<>();
+    private final Map<String, ApiEndpoint> routes = new HashMap<>();
 
 
     /**
@@ -39,9 +39,9 @@ public class ApiHandler implements HttpHandler {
      * @param sessions A session store used to track logged-in users.
      * @param preferences A database to keep track of user preferences.
      */
-    public ApiHandler(UserDao users, SessionStore sessions, PreferencesService preferencesService) {
+    public ApiRouter(UserDao users, SessionStore sessions, PreferencesService preferencesService) {
         // Add handlers to be utilized
-        List<ApiRoute> handlerList = List.of(
+        List<ApiEndpoint> handlerList = List.of(
             new RegisterHandler(users),
             new LoginHandler(users, sessions),
             new SessionHandler(sessions),
@@ -53,7 +53,7 @@ public class ApiHandler implements HttpHandler {
             new ConfigHandler("dorms.json", "/api/dorms")
         );
 
-        for (ApiRoute handler : handlerList) {
+        for (ApiEndpoint handler : handlerList) {
             routes.put(handler.getPath(), handler);
         }
     }
@@ -73,7 +73,7 @@ public class ApiHandler implements HttpHandler {
         }
 
         String path = exchange.getRequestURI().getPath();
-        ApiRoute route = routes.get(path);
+        ApiEndpoint route = routes.get(path);
 
         if (route == null) {
             sendJson(exchange, 404, error("Unknown endpoint: " + path));

@@ -9,7 +9,7 @@ import com.sun.net.httpserver.HttpExchange;
 /**
  * Serves a JSON configuration file from the CONF_DIR.
  */
-public class ConfigHandler implements ApiRoute {
+public class ConfigHandler implements ApiEndpoint {
     private final String filename;
     private final String httpPath;
 

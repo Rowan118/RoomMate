@@ -12,7 +12,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.sun.net.httpserver.HttpExchange;
 
-final class RaEmailHandler implements ApiRoute {
+final class RaEmailHandler implements ApiEndpoint {
     //class to handle checking whether an email is in the list of valid emails for RA accounts
     //As we have no other way to check whether someone is an RA, these are just going to be hardcoded emails in a .json
     //For testing, clear the database and use one of the emails in emailList.json
@@ -21,9 +21,9 @@ final class RaEmailHandler implements ApiRoute {
     @Override
     public void handle(HttpExchange exchange) throws Exception {
         //Read the email, check whether it is not null
-        JsonObject body = ApiHandler.readBody(exchange);
+        JsonObject body = ApiRouter.readBody(exchange);
         if (!body.has("email") || !body.get("email").isJsonPrimitive()) {
-            ApiHandler.sendJson(exchange, 400, ApiHandler.error("Email is required"));
+            ApiRouter.sendJson(exchange, 400, ApiRouter.error("Email is required"));
             return;
         }
 
@@ -46,7 +46,7 @@ final class RaEmailHandler implements ApiRoute {
             }
 
             //send boolean response back to the frontend for credential database submission or error handling
-            ApiHandler.sendJson(exchange, 200, new JsonPrimitive(valid));
+            ApiRouter.sendJson(exchange, 200, new JsonPrimitive(valid));
         }
     }
 

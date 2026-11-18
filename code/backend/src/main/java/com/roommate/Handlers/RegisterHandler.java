@@ -14,7 +14,7 @@ import com.sun.net.httpserver.HttpExchange;
  * 
  * RegisterHandler
  */
-final class RegisterHandler implements ApiRoute {
+final class RegisterHandler implements ApiEndpoint {
 
     private final UserDao users;
 
@@ -34,29 +34,29 @@ final class RegisterHandler implements ApiRoute {
      */
     @Override
     public void handle(HttpExchange exchange) throws Exception {
-        JsonObject body = ApiHandler.readBody(exchange);
+        JsonObject body = ApiRouter.readBody(exchange);
         String email = optString(body, "email");
         String password = optString(body, "password");
         String accountType = optString(body, "account");
 
         if (accountType == null || accountType.toLowerCase().equals("none")) {
-            ApiHandler.sendJson(exchange, 400, ApiHandler.error("Please select an account type"));
+            ApiRouter.sendJson(exchange, 400, ApiRouter.error("Please select an account type"));
             return;
         }
 
         if (email == null || !email.toLowerCase().endsWith("@wsu.edu")) {
-            ApiHandler.sendJson(exchange, 400, ApiHandler.error("Not a valid WSU email"));
+            ApiRouter.sendJson(exchange, 400, ApiRouter.error("Not a valid WSU email"));
             return;
         }
 
         String passwordProblem = validatePassword(password);
         if (passwordProblem != null) {
-            ApiHandler.sendJson(exchange, 400, ApiHandler.error(passwordProblem));
+            ApiRouter.sendJson(exchange, 400, ApiRouter.error(passwordProblem));
             return;
         }
 
         if (users.emailExists(email)) {
-            ApiHandler.sendJson(exchange, 409, ApiHandler.error("An account with that email already exists"));
+            ApiRouter.sendJson(exchange, 409, ApiRouter.error("An account with that email already exists"));
             return;
         }
 
@@ -64,11 +64,11 @@ final class RegisterHandler implements ApiRoute {
             users.createUser(email, password, accountType);
         } catch (SQLException e) {
             // The unique constraint may fire if another request registers this email concurrently.
-            ApiHandler.sendJson(exchange, 409, ApiHandler.error("An account with that email already exists"));
+            ApiRouter.sendJson(exchange, 409, ApiRouter.error("An account with that email already exists"));
             return;
         }
 
-        ApiHandler.sendJson(exchange, 201, ApiHandler.success("Account created"));
+        ApiRouter.sendJson(exchange, 201, ApiRouter.success("Account created"));
     }
 
     private String optString(JsonObject obj, String key) {

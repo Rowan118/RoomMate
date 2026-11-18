@@ -10,7 +10,7 @@ import com.google.gson.JsonParser;
 import com.roommate.Databases.Database;
 import com.roommate.Databases.LoginDatabase;
 import com.roommate.Databases.PreferencesDatabase;
-import com.roommate.Handlers.ApiHandler;
+import com.roommate.Handlers.ApiRouter;
 import com.sun.net.httpserver.HttpServer;
 
 import com.roommate.Services.PasswordService;
@@ -62,7 +62,7 @@ public class Main {
         UserDao users = new UserDao(loginDb, passwords);
         SessionStore sessions = new SessionStore();
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.createContext("/api", new ApiHandler(users, sessions, preferences));
+        server.createContext("/api", new ApiRouter(users, sessions, preferences));
 
         // Single-threaded: SQLite only allows one writer at a time
         server.setExecutor(Executors.newSingleThreadExecutor());

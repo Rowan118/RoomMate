@@ -8,7 +8,7 @@ import com.sun.net.httpserver.HttpExchange;
  * 
  * SessionHandler
  */
-final class SessionHandler implements ApiRoute {
+final class SessionHandler implements ApiEndpoint {
 
     private final SessionStore sessions;
 
@@ -28,17 +28,17 @@ final class SessionHandler implements ApiRoute {
      */
     @Override
     public void handle(HttpExchange exchange) throws Exception {
-        String sessionId = ApiHandler.readCookie(exchange, "sessionId");
+        String sessionId = ApiRouter.readCookie(exchange, "sessionId");
         String email = sessions.getEmail(sessionId);
         if (email == null) {
-            ApiHandler.sendJson(exchange, 401, ApiHandler.error("Not logged in"));
+            ApiRouter.sendJson(exchange, 401, ApiRouter.error("Not logged in"));
             return;
         }
 
         JsonObject payload = new JsonObject();
         payload.addProperty("ok", true);
         payload.addProperty("email", email);
-        ApiHandler.sendJson(exchange, 200, payload);
+        ApiRouter.sendJson(exchange, 200, payload);
     }
 
     @Override

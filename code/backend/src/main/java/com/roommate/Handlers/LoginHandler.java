@@ -14,7 +14,7 @@ import com.sun.net.httpserver.HttpExchange;
  * 
  * LoginHandler
  */
-final class LoginHandler implements ApiRoute {
+final class LoginHandler implements ApiEndpoint {
 
     private final UserDao users;
     private final SessionStore sessions;
@@ -42,23 +42,23 @@ final class LoginHandler implements ApiRoute {
         String password = optString(body, "password");
 
         if (email == null || password == null) {
-            ApiHandler.sendJson(exchange, 400, ApiHandler.error("Email and password are required"));
+            ApiRouter.sendJson(exchange, 400, ApiRouter.error("Email and password are required"));
             return;
         }
 
         if (!users.credentialsMatch(email, password)) {
-            ApiHandler.sendJson(exchange, 401, ApiHandler.error("Invalid email or password"));
+            ApiRouter.sendJson(exchange, 401, ApiRouter.error("Invalid email or password"));
             return;
         }
 
-        sessions.removeSession(ApiHandler.readCookie(exchange, "sessionId"));
+        sessions.removeSession(ApiRouter.readCookie(exchange, "sessionId"));
         String sessionId = sessions.createSession(email);
         exchange.getResponseHeaders().add(
             "Set-Cookie",
             "sessionId=" + sessionId + "; Path=/; HttpOnly; SameSite=Lax"
         );
 
-        ApiHandler.sendJson(exchange, 200, ApiHandler.success("Logged in"));
+        ApiRouter.sendJson(exchange, 200, ApiRouter.success("Logged in"));
     }
 
     /**

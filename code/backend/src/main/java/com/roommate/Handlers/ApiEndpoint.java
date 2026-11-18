@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 /**
  * Defines a specific API endpoint.
  */
-public interface ApiRoute {
+public interface ApiEndpoint {
 
     /**
      * Handles the HTTP request.

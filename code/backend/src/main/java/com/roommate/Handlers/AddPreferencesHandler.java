@@ -8,7 +8,7 @@ import com.roommate.UserDao;
 import com.roommate.Services.PreferencesService;
 import com.sun.net.httpserver.HttpExchange;
 
-public class AddPreferencesHandler implements ApiRoute {
+public class AddPreferencesHandler implements ApiEndpoint {
 
     private final UserDao users;
     private final SessionStore sessions;
@@ -22,21 +22,21 @@ public class AddPreferencesHandler implements ApiRoute {
 
     @Override
     public void handle(HttpExchange exchange) throws Exception {
-        String email = sessions.getEmail(ApiHandler.readCookie(exchange, "sessionId"));
+        String email = sessions.getEmail(ApiRouter.readCookie(exchange, "sessionId"));
         if (email == null) {
-            ApiHandler.sendJson(exchange, 401, ApiHandler.error("Not logged in"));
+            ApiRouter.sendJson(exchange, 401, ApiRouter.error("Not logged in"));
             return;
         }
 
         Long userId = users.findUserIdByEmail(email);
         if (userId == null) {
-            ApiHandler.sendJson(exchange, 401, ApiHandler.error("Not logged in"));
+            ApiRouter.sendJson(exchange, 401, ApiRouter.error("Not logged in"));
             return;
         }
 
-        JsonObject body = ApiHandler.readBody(exchange);
+        JsonObject body = ApiRouter.readBody(exchange);
         if (body.size() == 0) {
-            ApiHandler.sendJson(exchange, 400, ApiHandler.error("No preferences provided"));
+            ApiRouter.sendJson(exchange, 400, ApiRouter.error("No preferences provided"));
             return;
         }
 
@@ -44,13 +44,13 @@ public class AddPreferencesHandler implements ApiRoute {
             preferencesService.save(userId, body);
         } catch (SQLException e) {
             e.printStackTrace();
-            ApiHandler.sendJson(exchange, 500, ApiHandler.error("Failed to save preferences. They may already exist."));
+            ApiRouter.sendJson(exchange, 500, ApiRouter.error("Failed to save preferences. They may already exist."));
             return;
         }
 
-        JsonObject response = ApiHandler.success("Preferences saved");
+        JsonObject response = ApiRouter.success("Preferences saved");
         response.add("preferences", body);
-        ApiHandler.sendJson(exchange, 200, response);
+        ApiRouter.sendJson(exchange, 200, response);
     }
 
     @Override

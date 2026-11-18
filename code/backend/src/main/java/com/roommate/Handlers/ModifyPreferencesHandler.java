@@ -7,7 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
  * 
  * ModifyPreferencesHandler
  */
-final class ModifyPreferencesHandler implements ApiRoute {
+final class ModifyPreferencesHandler implements ApiEndpoint {
 
     /**
      * Handle the preferences API
@@ -17,8 +17,8 @@ final class ModifyPreferencesHandler implements ApiRoute {
      */
     @Override
     public void handle(HttpExchange exchange) throws Exception {
-        JsonObject body = ApiHandler.readBody(exchange);
-        ApiHandler.sendJson(exchange, 501, ApiHandler.error("handleModifyPreferences recieved:\n" + body));
+        JsonObject body = ApiRouter.readBody(exchange);
+        ApiRouter.sendJson(exchange, 501, ApiRouter.error("handleModifyPreferences recieved:\n" + body));
     }
 
     @Override

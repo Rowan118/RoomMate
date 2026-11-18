@@ -6,7 +6,7 @@ import com.sun.net.httpserver.HttpExchange;
 /**
  * LogoutHandler
  */
-final class LogoutHandler implements ApiRoute {
+final class LogoutHandler implements ApiEndpoint {
 
     private final SessionStore sessions;
 
@@ -26,7 +26,7 @@ final class LogoutHandler implements ApiRoute {
      */
     @Override
     public void handle(HttpExchange exchange) throws Exception {
-        String sessionId = ApiHandler.readCookie(exchange, "sessionId");
+        String sessionId = ApiRouter.readCookie(exchange, "sessionId");
         sessions.removeSession(sessionId);
 
         exchange.getResponseHeaders().add(
@@ -34,7 +34,7 @@ final class LogoutHandler implements ApiRoute {
             "sessionId=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0"
         );
 
-        ApiHandler.sendJson(exchange, 200, ApiHandler.success("Logged out"));
+        ApiRouter.sendJson(exchange, 200, ApiRouter.success("Logged out"));
     }
 
     @Override
