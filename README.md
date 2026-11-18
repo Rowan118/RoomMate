@@ -11,6 +11,6 @@ You can run the backend and frontend separately via `python run-frontend.py` or 
 These scripts automatically pass in environment variables that determine the path of the configuration files and databases. You may edit them to point to a different directory that contains your configuration files and databases.
 
 ## FAQ
-> I am getting permission denied errors from `mvn package` on Windows.
+> I am getting permission denied errors from `mvn clean` on Windows.
 Wherever you have placed the Git repo files may live in a Onedrive directory. This causes issues with Maven.
 It's recommended to instead clone the repo into a directory that doesn't belong in Onedrive.
