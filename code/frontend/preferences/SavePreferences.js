@@ -1,170 +1,158 @@
 (() => {
-const submitInput = document.getElementById("submit");
-const firstNameInput = document.getElementById("firstName");
-const lastNameInput = document.getElementById("lastName");
-const majorInput = document.getElementById("major");
-const dormPrefInput = document.getElementById("dormPref");
-const roomTypeInput = document.getElementById("roomType");
-const ageInput = document.getElementById("age");
-const genderInput = document.getElementById("gender");
-const sameGenderPrefInput = document.getElementById("sameGenderPref");
-const wakeTimeInput = document.getElementById("wakeTime");
-const sleepTimeInput = document.getElementById("sleepTime");
-const alcoholPrefInput = document.getElementById("alcoholPref");
-const error = document.getElementById("error");
-const API_BASE = window.location.hostname === "127.0.0.1" 
-    ? "http://127.0.0.1:8080" 
-    : "http://localhost:8080";
+    const API_BASE = window.location.hostname === "127.0.0.1" 
+        ? "http://127.0.0.1:8080" 
+        : "http://localhost:8080";
 
-submitInput.addEventListener("click", async function() {
+    const formContainer = document.getElementById("preference-form-container");
+    const submitInput = document.getElementById("submit");
+    const error = document.getElementById("error");
+    
+    let schema = {};
+    let dorms = {};
 
-  error.innerText = "";
+    async function initForm() {
+        try {
+            // Fetch both configs
+            const [schemaRes, dormsRes] = await Promise.all([
+                fetch(`${API_BASE}/api/config`),
+                fetch(`${API_BASE}/api/dorms`)
+            ]);
+            
+            if (!schemaRes.ok || !dormsRes.ok) throw new Error("Failed to load config");
+            
+            schema = await schemaRes.json();
+            dorms = await dormsRes.json();
+            formContainer.innerHTML = ""; 
 
-  const firstName = firstNameInput.value;
-  const lastName = lastNameInput.value;
-  const major = majorInput.value;
-  const dormPref = dormPrefInput.value;
-  const roomType = roomTypeInput.value;
-  const age = ageInput.value;
-  const gender = genderInput.value;
-  const sameGenderPref = sameGenderPrefInput.value;
-  const wakeTime = wakeTimeInput.value;
-  const sleepTime = sleepTimeInput.value;
-  const alcoholPref = alcoholPrefInput.value;
+            for (const [key, config] of Object.entries(schema)) {
+                const label = document.createElement("label");
+                label.htmlFor = key;
+                label.innerText = config.label + ":";
+                
+                let input;
+                if (config.type === "select") {
+                    input = document.createElement("select");
+                    const defaultOption = document.createElement("option");
+                    defaultOption.value = "none";
+                    defaultOption.innerText = "";
+                    input.appendChild(defaultOption);
 
-  if (!firstName) {
-    error.innerText = "First name field cannot be empty";
-    return false;
-  }
+                    config.options.forEach(opt => {
+                        const option = document.createElement("option");
+                        option.value = opt;
+                        option.innerText = opt;
+                        input.appendChild(option);
+                    });
+                } else if (config.type === "boolean") {
+                    input = document.createElement("select");
+                    input.innerHTML = `
+                        <option value="none"></option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    `;
+                } else {
+                    input = document.createElement("input");
+                    input.type = "text";
+                }
 
-  if (!lastName) {
-    error.innerText = "Last name field cannot be empty";
-    return false;
-  }
+                input.id = key;
+                input.name = key;
+                if (config.required) input.required = true;
 
-  if (!major) {
-    error.innerText = "Major field cannot be empty";
-    return false;
-  }
+                formContainer.appendChild(label);
+                formContainer.appendChild(document.createElement("br"));
+                formContainer.appendChild(input);
+                formContainer.appendChild(document.createElement("br"));
+                formContainer.appendChild(document.createElement("br"));
+            }
+            submitInput.style.display = "block";
+        } catch (err) {
+            formContainer.innerHTML = "<p style='color:red;'>Error loading configuration from backend.</p>";
+            console.error(err);
+        }
+    }
 
-  if (dormPref === "none") {
-    error.innerText = "Please select a dorm preference";
-    return false;
-  }
+    submitInput.addEventListener("click", async function(e) {
+        e.preventDefault();
+        error.innerText = "";
 
-  if (roomType === "none") {
-    error.innerText = "Please select a room type preference";
-    return false;
-  }
+        const formData = {};
+        for (const key of Object.keys(schema)) {
+            const element = document.getElementById(key);
+            let value = element.value;
 
-  if (age === "none") {
-    error.innerText = "Please select an age preference";
-    return false;
-  }
+            if (value === "none" || value === "") {
+                error.innerText = `Please fill out all required fields.`;
+                return false;
+            }
+            formData[key] = value;
+        }
 
-  if (gender === "none") {
-    error.innerText = "Please select a gender preference";
-    return false;
-  }
+        // --- DYNAMIC BUSINESS LOGIC ---
+        // Find the selected dorm, gender, and room type by checking values against dorms.json
+        let selectedDormName = null;
+        let selectedGender = null;
+        let selectedRoomType = null;
 
-  if (sameGenderPref === "none") {
-    error.innerText = "Please select a same gender preference";
-    return false;
-  }
+        for (const key in formData) {
+            const val = formData[key];
+            if (dorms[val]) selectedDormName = val;
+            
+            if (schema[key] && schema[key].options) {
+                if (schema[key].options.includes("Man") || schema[key].options.includes("Woman")) selectedGender = val;
+                if (schema[key].options.includes("Single") || schema[key].options.includes("Double")) selectedRoomType = val;
+            }
+        }
 
-  if (wakeTime === "none") {
-    error.innerText = "Please select a wake time preference";
-    return false;
-  }
+        if (selectedDormName && selectedGender) {
+            const dormData = dorms[selectedDormName];
+            if (dormData.allowed_genders && !dormData.allowed_genders.includes(selectedGender)) {
+                error.innerText = `${selectedDormName} does not allow ${selectedGender}`;
+                return false;
+            }
+            if (selectedRoomType === "Single" && !dormData.has_singles_rooms) {
+                error.innerText = `${selectedDormName} does not have single rooms`;
+                return false;
+            }
+            if (selectedRoomType === "Double" && !dormData.has_doubles_rooms) {
+                error.innerText = `${selectedDormName} does not have double rooms`;
+                return false;
+            }
+        }
 
-  if (sleepTime === "none") {
-    error.innerText = "Please select a sleep time preference";
-    return false;
-  }
-
-  if (alcoholPref === "none") {
-    error.innerText = "Please select an alcohol preference";
-    return false;
-  }
-
-  //basic checks to ensure information isn't contradicting
-  //helps simplify the matching process in the backend
-
-  // -- Reference for dorm rules: --
-  // Regents = female only
-  // Stimson = male only
-  // Rogers = double only
-  // McEachern = single only, must be 19 or older
-  // McCrosky = gender inclusive only
-  // Streit Perham/Orton = co-ed (no special rules)
-
-  if (dormPref === "Regents" && gender === "male") {
-    error.innerText = "Regents is a residence hall for females";
-    return false;
-  }
-
-  if (dormPref === "Stimson" && gender === "female") {
-    error.innerText = "Stimson is a residence hall for males";
-    return false;
-  }
-
-  if (dormPref === "Rogers" && roomType === "single") {
-    error.innerText = "Rogers hall only has double rooms";
-    return false;
-  }
-
-  if (dormPref === "McEachern" && roomType === "double") {
-    error.innerText = "McEachern hall only has single rooms";
-    return false;
-  }
-
-  if (dormPref === "McEachern" && age === "under 19") {
-    error.innerText = "Must be 19 or older to live in McEachern hall";
-    return false;
-  }
-
-  if (dormPref === "McCrosky" && sameGenderPref === "yes") {
-    error.innerText = "Pick a different hall for rooming with the same gender";
-    return false;
-  }
-
-  if (age === "under 21" && alcoholPref !== "under21") {
-      error.innerText = "Alcohol preference must be set as 'under 21'";
-      return false;
-  }
-
-  if (age === "21 or more" && alcoholPref === "under21") {
-      error.innerText = "Please select 'No' or 'Yes' instead";
-      return false;
-  }
-
-  //moves information to backend once processed
-
-  try {
-        const response = await fetch(`${API_BASE}/api/addPreferences`, {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ firstName, lastName, major, dormPref, roomType, age, gender, 
-                sameGenderPref, wakeTime, sleepTime, alcoholPref
-             })
-        });
-        const data = await response.json();
-
-        if (!response.ok) {
-            error.innerText = data.message || "Could not save preferences at this time";
+        // Dynamic Age/Alcohol check
+        let ageVal = null;
+        let alcoholVal = null;
+        for (const key in schema) {
+            if (schema[key].options && schema[key].options.includes("<=18")) ageVal = formData[key];
+            if (schema[key].type === "boolean" && schema[key].label.toLowerCase().includes("alcohol")) alcoholVal = formData[key];
+        }
+        if ((ageVal === "<=18" || ageVal === "19-20") && alcoholVal === "true") {
+            error.innerText = "Alcohol preference must be set to No if under 21.";
             return false;
         }
 
-        sessionStorage.setItem("submittedPreferences", JSON.stringify(data.preferences));
-        window.location.href = "submission.html";
-    } 
-    catch (err) {
-        error.innerText = "Something went wrong. Try again later";
-    }
+        try {
+            const response = await fetch(`${API_BASE}/api/addPreferences`, {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
 
-    //redirection here means we don't need this to run anymore
-    return false;
+            if (!response.ok) {
+                error.innerText = data.message || "Could not save preferences at this time";
+                return false;
+            }
 
-});
+            sessionStorage.setItem("submittedPreferences", JSON.stringify(data.preferences));
+            window.location.href = "submission.html";
+        } 
+        catch (err) {
+            error.innerText = "Something went wrong. Try again later.";
+        }
+    });
+
+    initForm();
 })();

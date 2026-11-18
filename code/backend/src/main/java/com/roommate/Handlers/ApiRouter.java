@@ -1,15 +1,21 @@
-package com.roommate;
+package com.roommate.Handlers;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.roommate.SessionStore;
+import com.roommate.UserDao;
+import com.roommate.Services.PreferencesService;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -19,17 +25,13 @@ import com.sun.net.httpserver.HttpHandler;
  * Handle API requests
  * ApiHandler
  */
-public class ApiHandler implements HttpHandler {
+public class ApiRouter implements HttpHandler {
 
     private static final Gson GSON = new Gson();
 
-    private final RaEmailHandler raEmailHandler;
-    private final RegisterHandler registerHandler;
-    private final LoginHandler loginHandler;
-    private final SessionHandler sessionHandler;
-    private final LogoutHandler logoutHandler;
-    private final AddPreferencesHandler addPreferencesHandler;
-    private final ModifyPreferencesHandler modifyPreferencesHandler;
+    // Keeps track of what HTTP requests go to which handler.
+    private final Map<String, ApiEndpoint> routes = new HashMap<>();
+
 
     /**
      * ApiHandler object
@@ -37,16 +39,25 @@ public class ApiHandler implements HttpHandler {
      * @param sessions A session store used to track logged-in users.
      * @param preferences A database to keep track of user preferences.
      */
-    public ApiHandler(UserDao users, SessionStore sessions, PreferencesDatabase preferences) {
-        
-        this.raEmailHandler = new RaEmailHandler ();
-        this.registerHandler = new RegisterHandler(users);
-        this.loginHandler = new LoginHandler(users, sessions);
-        this.sessionHandler = new SessionHandler(sessions);
-        this.logoutHandler = new LogoutHandler(sessions);
-        this.addPreferencesHandler = new AddPreferencesHandler(users, sessions, preferences);
-        this.modifyPreferencesHandler = new ModifyPreferencesHandler();
+    public ApiRouter(UserDao users, SessionStore sessions, PreferencesService preferencesService) {
+        // Add handlers to be utilized
+        List<ApiEndpoint> handlerList = List.of(
+            new RegisterHandler(users),
+            new LoginHandler(users, sessions),
+            new SessionHandler(sessions),
+            new LogoutHandler(sessions),
+            new RaEmailHandler(),
+            new AddPreferencesHandler(users, sessions, preferencesService),
+            new ModifyPreferencesHandler(),
+            new ConfigHandler("preferences.json", "/api/config"),
+            new ConfigHandler("dorms.json", "/api/dorms")
+        );
+
+        for (ApiEndpoint handler : handlerList) {
+            routes.put(handler.getPath(), handler);
+        }
     }
+
 
     /* Overridden HTTP network method from the standard library.
      * Connects the database to the http server.
@@ -62,17 +73,21 @@ public class ApiHandler implements HttpHandler {
         }
 
         String path = exchange.getRequestURI().getPath();
+        ApiEndpoint route = routes.get(path);
+
+        if (route == null) {
+            sendJson(exchange, 404, error("Unknown endpoint: " + path));
+            return;
+        }
+
+        // Centralized Method Checking
+        if (!route.getMethod().equalsIgnoreCase(exchange.getRequestMethod())) {
+            sendJson(exchange, 405, error("Use " + route.getMethod() + " for this endpoint"));
+            return;
+        }
+
         try {
-            switch (path) {
-                case "/api/ra_emails" -> raEmailHandler.handle(this, exchange);
-                case "/api/register" -> registerHandler.handle(this, exchange);
-                case "/api/login" -> loginHandler.handle(this, exchange);
-                case "/api/session" -> sessionHandler.handle(this, exchange);
-                case "/api/logout" -> logoutHandler.handle(this, exchange);
-                case "/api/addPreferences" -> addPreferencesHandler.handle(this, exchange);
-                case "/api/modifyPreferences" -> modifyPreferencesHandler.handle(this, exchange);
-                default -> sendJson(exchange, 404, error("Unknown endpoint: " + path));
-            }
+            route.handle(exchange);
         } catch (SQLException e) {
             e.printStackTrace();
             sendJson(exchange, 500, error("Database error"));
@@ -89,7 +104,7 @@ public class ApiHandler implements HttpHandler {
      * @param payload The JSON body to serialize to.
      * @throws IOException An IOException may be thrown if writing to the stream fails.
      */
-    void sendJson(HttpExchange exchange, int status, JsonElement payload) throws IOException {
+    static void sendJson(HttpExchange exchange, int status, JsonElement payload) throws IOException {
         byte[] bytes = GSON.toJson(payload).getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
         exchange.sendResponseHeaders(status, bytes.length);
@@ -103,7 +118,7 @@ public class ApiHandler implements HttpHandler {
      * @param message Human-readable message summary.
      * @return The response payload.
      */
-    JsonObject success(String message) {
+    static JsonObject success(String message) {
         JsonObject payload = new JsonObject();
         payload.addProperty("ok", true);
         payload.addProperty("message", message);
@@ -115,7 +130,7 @@ public class ApiHandler implements HttpHandler {
      * @param message Human-readable message summary.
      * @return The response payload.
      */
-    JsonObject error(String message) {
+    static JsonObject error(String message) {
         JsonObject payload = new JsonObject();
         payload.addProperty("ok", false);
         payload.addProperty("message", message);
@@ -134,6 +149,7 @@ public class ApiHandler implements HttpHandler {
         if (origin != null && !origin.isBlank()) {
             headers.set("Access-Control-Allow-Origin", origin);
         } else {
+            // TODO: Figure out how to handle these hardcoded addresses.
             headers.set("Access-Control-Allow-Origin", "http://localhost:8000");
         }
 
@@ -154,5 +170,72 @@ public class ApiHandler implements HttpHandler {
             String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
             return raw.isBlank() ? new JsonObject() : JsonParser.parseString(raw).getAsJsonObject();
         }
+    }
+
+    /**
+     * Get a cookie from an http request and a key.
+     * @param exchange Http request.
+     * @param key Key
+     * @return Cookie String
+     */
+    static protected String readCookie(HttpExchange exchange, String key) {
+        Headers headers = exchange.getRequestHeaders();
+        String cookieHeader = headers.getFirst("Cookie");
+        if (cookieHeader == null) {
+            return null;
+        }
+
+        for (String part : cookieHeader.split(";")) {
+            String trimmed = part.trim();
+            if (trimmed.startsWith(key + "=")) {
+                return trimmed.substring((key + "=").length());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Check if a JsonObject contains a key and return its value.
+     * @param obj The Json instance.
+     * @param key The key to check.
+     * @return Returns the value associated with the key.
+     */
+    static protected String optString(JsonObject obj, String key) {
+        return obj.has(key) && !obj.get(key).isJsonNull()
+            ? obj.get(key).getAsString()
+            : null;
+    }
+
+    /**
+     * Validates the session cookie and returns the user's ID.
+     * If not logged in, this method handles sending the 401 error response automatically.
+     * @return The userId, or null if not logged in (and the response has already been sent).
+     */
+    /**
+     * Validates the session cookie and returns the user's ID.
+     * If they're not logged in, then a 401 error will be automatically sent.
+     * @param exchange The HTTP request
+     * @param sessions SessionStore of sessions
+     * @param users UserDao of users
+     * @return The userID if logged in, null if not.
+     * @throws IOException Throws an IOException if an unexpected IO Stream failure happens.
+     * @throws SQLException Throws an SQLException if the SQL operation unexpectedly fails.
+     */
+    static protected Long getAuthenticatedUserId(HttpExchange exchange, SessionStore sessions, UserDao users) throws IOException, SQLException{
+        String sessionId = readCookie(exchange, "sessionId");
+        String email = sessions.getEmail(sessionId);
+        
+        if (email == null) {
+            sendJson(exchange, 401, error("Not logged in"));
+            return null;
+        }
+        
+        Long userId = users.findUserIdByEmail(email);
+        if (userId == null) {
+            sendJson(exchange, 401, error("Not logged in"));
+            return null;
+        }
+        
+        return userId;
     }
 }

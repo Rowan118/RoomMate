@@ -1,19 +1,15 @@
-package com.roommate;
+package com.roommate.Handlers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.roommate.UserDao;
 import com.sun.net.httpserver.HttpExchange;
 
 /**
- * 
  * RegisterHandler
  */
-final class RegisterHandler {
+final class RegisterHandler implements ApiEndpoint {
 
     private final UserDao users;
 
@@ -31,35 +27,31 @@ final class RegisterHandler {
      * @param exchange Http request
      * @throws Exception May throw an exception if an unexpected network error occurs.
      */
-    void handle(ApiHandler api, HttpExchange exchange) throws Exception {
-        if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-            api.sendJson(exchange, 405, api.error("Use POST for this endpoint"));
-            return;
-        }
-
-        JsonObject body = readBody(exchange);
-        String email = optString(body, "email");
-        String password = optString(body, "password");
-        String accountType = optString(body, "account");
+    @Override
+    public void handle(HttpExchange exchange) throws Exception {
+        JsonObject body = ApiRouter.readBody(exchange);
+        String email = ApiRouter.optString(body, "email");
+        String password = ApiRouter.optString(body, "password");
+        String accountType = ApiRouter.optString(body, "account");
 
         if (accountType == null || accountType.toLowerCase().equals("none")) {
-            api.sendJson(exchange, 400, api.error("Please select an account type"));
+            ApiRouter.sendJson(exchange, 400, ApiRouter.error("Please select an account type"));
             return;
         }
 
         if (email == null || !email.toLowerCase().endsWith("@wsu.edu")) {
-            api.sendJson(exchange, 400, api.error("Not a valid WSU email"));
+            ApiRouter.sendJson(exchange, 400, ApiRouter.error("Not a valid WSU email"));
             return;
         }
 
         String passwordProblem = validatePassword(password);
         if (passwordProblem != null) {
-            api.sendJson(exchange, 400, api.error(passwordProblem));
+            ApiRouter.sendJson(exchange, 400, ApiRouter.error(passwordProblem));
             return;
         }
 
         if (users.emailExists(email)) {
-            api.sendJson(exchange, 409, api.error("An account with that email already exists"));
+            ApiRouter.sendJson(exchange, 409, ApiRouter.error("An account with that email already exists"));
             return;
         }
 
@@ -67,30 +59,11 @@ final class RegisterHandler {
             users.createUser(email, password, accountType);
         } catch (SQLException e) {
             // The unique constraint may fire if another request registers this email concurrently.
-            api.sendJson(exchange, 409, api.error("An account with that email already exists"));
+            ApiRouter.sendJson(exchange, 409, ApiRouter.error("An account with that email already exists"));
             return;
         }
 
-        api.sendJson(exchange, 201, api.success("Account created"));
-    }
-
-    /**
-     * Read http request body and format it in json.
-     * @param exchange The http request
-     * @return A Json object that contains the info of the http request.
-     * @throws IOException May throw an error if an unexpected error occurs parsing the http request.
-     */
-    private JsonObject readBody(HttpExchange exchange) throws IOException {
-        try (InputStream in = exchange.getRequestBody()) {
-            String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-            return raw.isBlank() ? new JsonObject() : JsonParser.parseString(raw).getAsJsonObject();
-        }
-    }
-
-    private String optString(JsonObject obj, String key) {
-        return obj.has(key) && !obj.get(key).isJsonNull()
-            ? obj.get(key).getAsString()
-            : null;
+        ApiRouter.sendJson(exchange, 201, ApiRouter.success("Account created"));
     }
 
     /**
@@ -116,4 +89,15 @@ final class RegisterHandler {
         }
         return null;
     }
+
+    @Override
+    public String getMethod() {
+        return "POST";
+    }
+
+    @Override 
+    public String getPath() {
+        return "/api/register";
+    }
+
 }

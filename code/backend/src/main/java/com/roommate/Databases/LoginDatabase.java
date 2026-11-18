@@ -1,7 +1,6 @@
-package com.roommate;
+package com.roommate.Databases;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -21,9 +20,10 @@ public class LoginDatabase extends Database {
 
     /**    (non-Javadoc)
      * 
-     * @see com.roommate.Database#init()
+     * @see com.roommate.Databases.Database#init()
      */
     @Override
+    public
     void init() {
         String sql = """
             CREATE TABLE IF NOT EXISTS users (

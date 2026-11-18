@@ -1,9 +1,8 @@
-package com.roommate;
+package com.roommate.Databases;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /** Owns the SQLite connection string and creates the schema on startup. */
 /**
@@ -26,7 +25,7 @@ public abstract class Database {
     /**
      * Create a new database prepopulated with columns.
      */
-    abstract void init();
+    public abstract void init();
 
     /**
      * Attempt to connect to the SQLite database.
