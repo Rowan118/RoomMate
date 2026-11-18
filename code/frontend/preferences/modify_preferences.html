@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>modify_preferences</title>
+  </head>
+  <body>
+
+    <p>User: <span id="sessionMessage"></span></p>
+    <h1>Room/Roommate preferences</h1>
+    
+    <script src="../session/loadSession.js"></script>
+
+    <p id="error" style="color: red;"></p>
+
+    <!-- The JS will build the form inside this div -->
+    <div id="preference-form-container">
+        <p>Loading preferences...</p>
+    </div>
+
+    <br>
+    <button type="button" id="submit" style="display: none;">Submit</button>
+
+    <script src="fetchPreferences.js" defer></script>
+
+  </body>
+</html>
