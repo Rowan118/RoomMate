@@ -64,6 +64,6 @@
         "label": "What temperature range are you comfortable with?",
         "type": "select",
         "options": ["<68°F", "68°F-72°F", "72°F+"],
-        "required": true
+        "required": false
     }
 }

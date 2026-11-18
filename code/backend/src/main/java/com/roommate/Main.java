@@ -13,6 +13,9 @@ import com.roommate.Databases.PreferencesDatabase;
 import com.roommate.Handlers.ApiHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import com.roommate.Services.PasswordService;
+import com.roommate.Services.PreferencesService;
+
 public class Main {
 
     public static void main(String[] args) throws Exception {
@@ -55,14 +58,13 @@ public class Main {
 
         // Initialize services
         PasswordService passwords = new PasswordService();
+        PreferencesService preferences = new PreferencesService(preferenceDb);
         UserDao users = new UserDao(loginDb, passwords);
         SessionStore sessions = new SessionStore();
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.createContext("/api", new ApiHandler(users, sessions, preferenceDb));
+        server.createContext("/api", new ApiHandler(users, sessions, preferences));
 
-        // Single-threaded: SQLite only allows one writer at a time, and for a
-        // proof of concept this avoids SQLITE_BUSY entirely. Swap for a thread
-        // pool once you move to PostgreSQL/MySQL.
+        // Single-threaded: SQLite only allows one writer at a time
         server.setExecutor(Executors.newSingleThreadExecutor());
         server.start();
 

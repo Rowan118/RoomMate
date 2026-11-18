@@ -1,4 +1,4 @@
-package com.roommate;
+package com.roommate.Services;
 
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;

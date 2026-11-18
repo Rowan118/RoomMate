@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -12,7 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.roommate.SessionStore;
 import com.roommate.UserDao;
-import com.roommate.Databases.PreferencesDatabase;
+import com.roommate.Services.PreferencesService;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -26,13 +28,9 @@ public class ApiHandler implements HttpHandler {
 
     private static final Gson GSON = new Gson();
 
-    private final RaEmailHandler raEmailHandler;
-    private final RegisterHandler registerHandler;
-    private final LoginHandler loginHandler;
-    private final SessionHandler sessionHandler;
-    private final LogoutHandler logoutHandler;
-    private final AddPreferencesHandler addPreferencesHandler;
-    private final ModifyPreferencesHandler modifyPreferencesHandler;
+    // Keeps track of what HTTP requests go to which handler.
+    private final Map<String, ApiRoute> routes = new HashMap<>();
+
 
     /**
      * ApiHandler object
@@ -40,16 +38,21 @@ public class ApiHandler implements HttpHandler {
      * @param sessions A session store used to track logged-in users.
      * @param preferences A database to keep track of user preferences.
      */
-    public ApiHandler(UserDao users, SessionStore sessions, PreferencesDatabase preferences) {
+    public ApiHandler(UserDao users, SessionStore sessions, PreferencesService preferencesService) {
+        // Register all routes here.
+        routes.put("/api/register", new RegisterHandler(users));
+        routes.put("/api/login", new LoginHandler(users, sessions));
+        routes.put("/api/session", new SessionHandler(sessions));
+        routes.put("/api/logout", new LogoutHandler(sessions));
+        routes.put("/api/ra_emails", new RaEmailHandler());
+        routes.put("/api/addPreferences", new AddPreferencesHandler(users, sessions, preferencesService));
+        routes.put("/api/modifyPreferences", new ModifyPreferencesHandler());
         
-        this.raEmailHandler = new RaEmailHandler ();
-        this.registerHandler = new RegisterHandler(users);
-        this.loginHandler = new LoginHandler(users, sessions);
-        this.sessionHandler = new SessionHandler(sessions);
-        this.logoutHandler = new LogoutHandler(sessions);
-        this.addPreferencesHandler = new AddPreferencesHandler(users, sessions, preferences);
-        this.modifyPreferencesHandler = new ModifyPreferencesHandler();
+        // Routes for accessing backend settings from the frontend.
+        routes.put("/api/config", new ConfigHandler("preferences.json"));
+        routes.put("/api/dorms", new ConfigHandler("dorms.json"));
     }
+
 
     /* Overridden HTTP network method from the standard library.
      * Connects the database to the http server.
@@ -65,41 +68,21 @@ public class ApiHandler implements HttpHandler {
         }
 
         String path = exchange.getRequestURI().getPath();
+        ApiRoute route = routes.get(path);
+
+        if (route == null) {
+            sendJson(exchange, 404, error("Unknown endpoint: " + path));
+            return;
+        }
+
+        // Centralized Method Checking
+        if (!route.getMethod().equalsIgnoreCase(exchange.getRequestMethod())) {
+            sendJson(exchange, 405, error("Use " + route.getMethod() + " for this endpoint"));
+            return;
+        }
+
         try {
-            switch (path) {
-                case "/api/ra_emails" -> raEmailHandler.handle(this, exchange);
-                case "/api/register" -> registerHandler.handle(this, exchange);
-                case "/api/login" -> loginHandler.handle(this, exchange);
-                case "/api/session" -> sessionHandler.handle(this, exchange);
-                case "/api/logout" -> logoutHandler.handle(this, exchange);
-                case "/api/addPreferences" -> addPreferencesHandler.handle(this, exchange);
-                case "/api/modifyPreferences" -> modifyPreferencesHandler.handle(this, exchange);
-                case "/api/config" -> {
-                    String confDir = System.getenv().getOrDefault("CONF_DIR", "configuration");
-                    java.nio.file.Path configFilePath = java.nio.file.Paths.get(confDir, "preferences.json");
-                    
-                    exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
-                    exchange.getResponseHeaders().set("Cache-Control", "no-store"); // Prevents browser caching!
-                    
-                    byte[] bytes = java.nio.file.Files.readAllBytes(configFilePath);
-                    exchange.sendResponseHeaders(200, bytes.length);
-                    exchange.getResponseBody().write(bytes);
-                    exchange.close();
-                }
-                case "/api/dorms" -> {
-                    String confDir = System.getenv().getOrDefault("CONF_DIR", "configuration");
-                    java.nio.file.Path configFilePath = java.nio.file.Paths.get(confDir, "dorms.json");
-                    
-                    exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
-                    exchange.getResponseHeaders().set("Cache-Control", "no-store");
-                    
-                    byte[] bytes = java.nio.file.Files.readAllBytes(configFilePath);
-                    exchange.sendResponseHeaders(200, bytes.length);
-                    exchange.getResponseBody().write(bytes);
-                    exchange.close();
-                }
-                default -> sendJson(exchange, 404, error("Unknown endpoint: " + path));
-            }
+            route.handle(exchange);
         } catch (SQLException e) {
             e.printStackTrace();
             sendJson(exchange, 500, error("Database error"));
@@ -116,7 +99,7 @@ public class ApiHandler implements HttpHandler {
      * @param payload The JSON body to serialize to.
      * @throws IOException An IOException may be thrown if writing to the stream fails.
      */
-    void sendJson(HttpExchange exchange, int status, JsonElement payload) throws IOException {
+    static void sendJson(HttpExchange exchange, int status, JsonElement payload) throws IOException {
         byte[] bytes = GSON.toJson(payload).getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
         exchange.sendResponseHeaders(status, bytes.length);
@@ -130,7 +113,7 @@ public class ApiHandler implements HttpHandler {
      * @param message Human-readable message summary.
      * @return The response payload.
      */
-    JsonObject success(String message) {
+    static JsonObject success(String message) {
         JsonObject payload = new JsonObject();
         payload.addProperty("ok", true);
         payload.addProperty("message", message);
@@ -142,7 +125,7 @@ public class ApiHandler implements HttpHandler {
      * @param message Human-readable message summary.
      * @return The response payload.
      */
-    JsonObject error(String message) {
+    static JsonObject error(String message) {
         JsonObject payload = new JsonObject();
         payload.addProperty("ok", false);
         payload.addProperty("message", message);

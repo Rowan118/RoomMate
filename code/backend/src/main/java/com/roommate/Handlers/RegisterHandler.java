@@ -14,7 +14,7 @@ import com.sun.net.httpserver.HttpExchange;
  * 
  * RegisterHandler
  */
-final class RegisterHandler {
+final class RegisterHandler implements ApiRoute {
 
     private final UserDao users;
 
@@ -32,35 +32,31 @@ final class RegisterHandler {
      * @param exchange Http request
      * @throws Exception May throw an exception if an unexpected network error occurs.
      */
-    void handle(ApiHandler api, HttpExchange exchange) throws Exception {
-        if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-            api.sendJson(exchange, 405, api.error("Use POST for this endpoint"));
-            return;
-        }
-
-        JsonObject body = readBody(exchange);
+    @Override
+    public void handle(HttpExchange exchange) throws Exception {
+        JsonObject body = ApiHandler.readBody(exchange);
         String email = optString(body, "email");
         String password = optString(body, "password");
         String accountType = optString(body, "account");
 
         if (accountType == null || accountType.toLowerCase().equals("none")) {
-            api.sendJson(exchange, 400, api.error("Please select an account type"));
+            ApiHandler.sendJson(exchange, 400, ApiHandler.error("Please select an account type"));
             return;
         }
 
         if (email == null || !email.toLowerCase().endsWith("@wsu.edu")) {
-            api.sendJson(exchange, 400, api.error("Not a valid WSU email"));
+            ApiHandler.sendJson(exchange, 400, ApiHandler.error("Not a valid WSU email"));
             return;
         }
 
         String passwordProblem = validatePassword(password);
         if (passwordProblem != null) {
-            api.sendJson(exchange, 400, api.error(passwordProblem));
+            ApiHandler.sendJson(exchange, 400, ApiHandler.error(passwordProblem));
             return;
         }
 
         if (users.emailExists(email)) {
-            api.sendJson(exchange, 409, api.error("An account with that email already exists"));
+            ApiHandler.sendJson(exchange, 409, ApiHandler.error("An account with that email already exists"));
             return;
         }
 
@@ -68,24 +64,11 @@ final class RegisterHandler {
             users.createUser(email, password, accountType);
         } catch (SQLException e) {
             // The unique constraint may fire if another request registers this email concurrently.
-            api.sendJson(exchange, 409, api.error("An account with that email already exists"));
+            ApiHandler.sendJson(exchange, 409, ApiHandler.error("An account with that email already exists"));
             return;
         }
 
-        api.sendJson(exchange, 201, api.success("Account created"));
-    }
-
-    /**
-     * Read http request body and format it in json.
-     * @param exchange The http request
-     * @return A Json object that contains the info of the http request.
-     * @throws IOException May throw an error if an unexpected error occurs parsing the http request.
-     */
-    private JsonObject readBody(HttpExchange exchange) throws IOException {
-        try (InputStream in = exchange.getRequestBody()) {
-            String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-            return raw.isBlank() ? new JsonObject() : JsonParser.parseString(raw).getAsJsonObject();
-        }
+        ApiHandler.sendJson(exchange, 201, ApiHandler.success("Account created"));
     }
 
     private String optString(JsonObject obj, String key) {
@@ -117,4 +100,10 @@ final class RegisterHandler {
         }
         return null;
     }
+
+    @Override
+    public String getMethod() {
+        return "POST";
+    }
+
 }

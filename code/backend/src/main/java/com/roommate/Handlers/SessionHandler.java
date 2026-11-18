@@ -1,6 +1,5 @@
 package com.roommate.Handlers;
 
-import com.sun.net.httpserver.Headers;
 import com.google.gson.JsonObject;
 import com.roommate.SessionStore;
 import com.sun.net.httpserver.HttpExchange;
@@ -9,7 +8,7 @@ import com.sun.net.httpserver.HttpExchange;
  * 
  * SessionHandler
  */
-final class SessionHandler {
+final class SessionHandler implements ApiRoute {
 
     private final SessionStore sessions;
 
@@ -27,22 +26,24 @@ final class SessionHandler {
      * @param exchange The http exchange request.
      * @throws Exception May fail if there's an unexpected network error.
      */
-    void handle(ApiHandler api, HttpExchange exchange) throws Exception {
-        if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-            api.sendJson(exchange, 405, api.error("Use GET for this endpoint"));
-            return;
-        }
-
+    @Override
+    public void handle(HttpExchange exchange) throws Exception {
         String sessionId = ApiHandler.readCookie(exchange, "sessionId");
         String email = sessions.getEmail(sessionId);
         if (email == null) {
-            api.sendJson(exchange, 401, api.error("Not logged in"));
+            ApiHandler.sendJson(exchange, 401, ApiHandler.error("Not logged in"));
             return;
         }
 
         JsonObject payload = new JsonObject();
         payload.addProperty("ok", true);
         payload.addProperty("email", email);
-        api.sendJson(exchange, 200, payload);
+        ApiHandler.sendJson(exchange, 200, payload);
     }
+
+    @Override
+    public String getMethod() {
+        return "GET";
+    }
+
 }

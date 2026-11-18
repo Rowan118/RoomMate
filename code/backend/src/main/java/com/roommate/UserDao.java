@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.roommate.Databases.Database;
+import com.roommate.Services.PasswordService;
 
 /** Create an abstraction between the user credentials database to separate database management from server logic*/
 public class UserDao {

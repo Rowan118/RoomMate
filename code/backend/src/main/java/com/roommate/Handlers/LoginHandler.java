@@ -8,14 +8,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.roommate.SessionStore;
 import com.roommate.UserDao;
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 /**
  * 
  * LoginHandler
  */
-final class LoginHandler {
+final class LoginHandler implements ApiRoute {
 
     private final UserDao users;
     private final SessionStore sessions;
@@ -36,23 +35,19 @@ final class LoginHandler {
      * @param exchange The http request
      * @throws Exception May throw an exception if an unexpected network error occurs.
      */
-    void handle(ApiHandler api, HttpExchange exchange) throws Exception {
-        if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-            api.sendJson(exchange, 405, api.error("Use POST for this endpoint"));
-            return;
-        }
-
+    @Override
+    public void handle(HttpExchange exchange) throws Exception {
         JsonObject body = readBody(exchange);
         String email = optString(body, "email");
         String password = optString(body, "password");
 
         if (email == null || password == null) {
-            api.sendJson(exchange, 400, api.error("Email and password are required"));
+            ApiHandler.sendJson(exchange, 400, ApiHandler.error("Email and password are required"));
             return;
         }
 
         if (!users.credentialsMatch(email, password)) {
-            api.sendJson(exchange, 401, api.error("Invalid email or password"));
+            ApiHandler.sendJson(exchange, 401, ApiHandler.error("Invalid email or password"));
             return;
         }
 
@@ -63,7 +58,7 @@ final class LoginHandler {
             "sessionId=" + sessionId + "; Path=/; HttpOnly; SameSite=Lax"
         );
 
-        api.sendJson(exchange, 200, api.success("Logged in"));
+        ApiHandler.sendJson(exchange, 200, ApiHandler.success("Logged in"));
     }
 
     /**
@@ -91,25 +86,8 @@ final class LoginHandler {
             : null;
     }
 
-    /**
-     * Get a cookie from an http request and a key.
-     * @param exchange Http request.
-     * @param key Key
-     * @return Cookie String
-     */
-    // private String readCookie(HttpExchange exchange, String key) {
-    //     Headers headers = exchange.getRequestHeaders();
-    //     String cookieHeader = headers.getFirst("Cookie");
-    //     if (cookieHeader == null) {
-    //         return null;
-    //     }
-
-    //     for (String part : cookieHeader.split(";")) {
-    //         String trimmed = part.trim();
-    //         if (trimmed.startsWith(key + "=")) {
-    //             return trimmed.substring((key + "=").length());
-    //         }
-    //     }
-    //     return null;
-    // }
+    @Override
+    public String getMethod() {
+        return "POST";
+    }
 }

@@ -33,24 +33,11 @@ public class PreferencesDatabase extends Database {
     @Override
     public 
     void init() {
-                // Build the SQL string dynamically based on the JSON
+        // Build the SQL string dynamically based on the JSON
         String createTableSql = buildCreateTableSql();
-
-        // Optional: You can keep triggers/indexes as hardcoded strings if they are static
-        String createTriggerSql = """
-            CREATE TRIGGER IF NOT EXISTS lock_placement
-            BEFORE UPDATE OF dorm, gender, room_type ON student_preferences
-            WHEN OLD.dorm IS NOT NEW.dorm
-                OR OLD.gender IS NOT new.gender
-                OR OLD.room_type IS NOT new.room_type
-            BEGIN
-                SELECT RAISE(ABORT, 'Placement profile is locked');
-            END
-            """;
 
         String[] sqlStatements = {
             createTableSql,
-            createTriggerSql
         };
 
         try (Connection conn = connect(); Statement st = conn.createStatement()) {
