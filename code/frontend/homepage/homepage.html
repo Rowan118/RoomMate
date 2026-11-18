@@ -1,26 +1,37 @@
 <!doctype html>
 <html lang="en">
   <!-- this will serve as the homepage for our site -->
+   <!-- Mostly just serves as the hub for completing all actions -->
   <head>
     <meta charset="utf-8">
-    <title>RoomMate homepage</title>
+    <title>homepage</title>
   </head>
   <body>
     <h1>Welcome to RoomMate!</h1>
     <p>User: <span id="sessionMessage"></span></p>
     <script src="../session/loadSession.js"></script>
+
+    <button onclick="window.location.href='/preferences/add_preferences.html'">Add preferences</button>
+    <br><br>
+
+    <button onclick="window.location.href='/preferences/modify_preferences.html'">View preferences</button>
+    <br><br>
+
+    <button onclick="window.location.href='view_assignment.html'">View room assignment</button>
+    <br><br>
+
+    <!-- Restricted to RA only -->
+    <button onclick="window.location.href='/roommate/view_floor.html'">View floor info</button>
+    <br><br>
+
+    <!-- Restricted to admin only -->
+    <button onclick="window.location.href='/system/view_info'">View system info</button>
+    <br><br>
+
     <button type="button" id="logout">Log out</button>
     <p id="logoutError" style="color: red;"></p>
     <script src="../session/logout.js" defer></script>
     <p>What would you like to do? </p>  
-
-    <a href="../preferences/view_preferences.html">
-    add or change your room preferences
-    </a>
-
-    <a href="view_assignment.html">
-    view your room assignment - coming soon
-    </a>
 
 </body>
 </html>
