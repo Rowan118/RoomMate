@@ -8,12 +8,21 @@ import com.roommate.UserDao;
 import com.roommate.Services.PreferencesService;
 import com.sun.net.httpserver.HttpExchange;
 
+/**
+ * AddPreferencesHandler
+ */
 public class AddPreferencesHandler implements ApiEndpoint {
 
     private final UserDao users;
     private final SessionStore sessions;
     private final PreferencesService preferencesService;
 
+    /**
+     * API handler for adding user preferences, but not overwriting them.
+     * @param users UserDao of users
+     * @param sessions SessionStore of sessions
+     * @param preferencesService A PreferencesService instance
+     */
     public AddPreferencesHandler(UserDao users, SessionStore sessions, PreferencesService preferencesService) {
         this.users = users;
         this.sessions = sessions;

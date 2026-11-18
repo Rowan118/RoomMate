@@ -208,11 +208,6 @@ public class ApiRouter implements HttpHandler {
 
     /**
      * Validates the session cookie and returns the user's ID.
-     * If not logged in, this method handles sending the 401 error response automatically.
-     * @return The userId, or null if not logged in (and the response has already been sent).
-     */
-    /**
-     * Validates the session cookie and returns the user's ID.
      * If they're not logged in, then a 401 error will be automatically sent.
      * @param exchange The HTTP request
      * @param sessions SessionStore of sessions

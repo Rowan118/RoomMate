@@ -9,7 +9,6 @@ import com.roommate.Services.PreferencesService;
 import com.sun.net.httpserver.HttpExchange;
 
 /**
- * 
  * ModifyPreferencesHandler
  */
 final class ModifyPreferencesHandler implements ApiEndpoint {
@@ -18,6 +17,12 @@ final class ModifyPreferencesHandler implements ApiEndpoint {
     private final SessionStore sessions;
     private final PreferencesService preferencesService;
 
+    /**
+     * API handler for modifying user preferences.
+     * @param users UserDao of users
+     * @param sessions SessionStore of sessions
+     * @param preferencesService A PreferencesService instance
+     */
     public ModifyPreferencesHandler(UserDao users, SessionStore sessions, PreferencesService preferencesService) {
         this.users = users;
         this.sessions = sessions;
@@ -45,7 +50,7 @@ final class ModifyPreferencesHandler implements ApiEndpoint {
             preferencesService.overwrite(userId, body);
         } catch (SQLException e) {
             e.printStackTrace();
-            ApiRouter.sendJson(exchange, 500, ApiRouter.error("Failed to save preferences. They may already exist."));
+            ApiRouter.sendJson(exchange, 500, ApiRouter.error("Failed to update preferences."));
             return;
         }
 
