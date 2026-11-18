@@ -7,8 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.roommate.SessionStore;
 import com.roommate.UserDao;
@@ -74,6 +74,30 @@ public class ApiHandler implements HttpHandler {
                 case "/api/logout" -> logoutHandler.handle(this, exchange);
                 case "/api/addPreferences" -> addPreferencesHandler.handle(this, exchange);
                 case "/api/modifyPreferences" -> modifyPreferencesHandler.handle(this, exchange);
+                case "/api/config" -> {
+                    String confDir = System.getenv().getOrDefault("CONF_DIR", "configuration");
+                    java.nio.file.Path configFilePath = java.nio.file.Paths.get(confDir, "preferences.json");
+                    
+                    exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+                    exchange.getResponseHeaders().set("Cache-Control", "no-store"); // Prevents browser caching!
+                    
+                    byte[] bytes = java.nio.file.Files.readAllBytes(configFilePath);
+                    exchange.sendResponseHeaders(200, bytes.length);
+                    exchange.getResponseBody().write(bytes);
+                    exchange.close();
+                }
+                case "/api/dorms" -> {
+                    String confDir = System.getenv().getOrDefault("CONF_DIR", "configuration");
+                    java.nio.file.Path configFilePath = java.nio.file.Paths.get(confDir, "dorms.json");
+                    
+                    exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+                    exchange.getResponseHeaders().set("Cache-Control", "no-store");
+                    
+                    byte[] bytes = java.nio.file.Files.readAllBytes(configFilePath);
+                    exchange.sendResponseHeaders(200, bytes.length);
+                    exchange.getResponseBody().write(bytes);
+                    exchange.close();
+                }
                 default -> sendJson(exchange, 404, error("Unknown endpoint: " + path));
             }
         } catch (SQLException e) {

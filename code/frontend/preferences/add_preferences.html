@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-  <!-- for adding preferences -->
   <head>
     <meta charset="utf-8">
     <title>account_homepage</title>
@@ -9,108 +8,20 @@
 
     <p>User: <span id="sessionMessage"></span></p>
     <h1>Room/Roommate preferences</h1>
+    
     <script src="../session/loadSession.js"></script>
 
     <p id="error" style="color: red;"></p>
 
-    <div id="preference form">
-      <label for="firstName">First name:</label><br>
-      <input type="text" id="firstName"><br><br>
-      <label for="lastName">Last name:</label><br>
-      <input type="text" id="lastName" ><br><br>
-      <label for="major">Major:</label><br>
-      <input type="text" id="major"><br><br>
-
-      <label for="dormPref">Preferred residence hall:</label><br>
-      <select name="dormPref" id="dormPref" required>
-        <option value="none"></option> 
-        <option value="Regents">Regents</option> 
-        <option value="Stimson">Stimson</option>
-        <option value="Rogers">Rogers</option>
-        <option value="McEachern">McEachern</option>
-        <option value="McCrosky">McCrosky</option>
-        <option value="Streit Perham">Streit Perham</option>
-        <option value="Orton">Orton</option>
-      </select>
-      <br><br>
-
-      <!-- Reference: -->
-      <!-- Regents = female only-->
-      <!-- Stimson = male only -->
-      <!-- Rogers = double only -->
-      <!-- McEachern = single only -->
-      <!-- McCrosky = gender inclusive only -->
-      <!-- Streit Perham/Orton = co-ed -->
-
-      <label for="roomType">Would you prefer a roommate or single room?</label><br>
-      <select name="roomType" id="roomType" required>
-        <option value="none"></option> 
-        <option value="single">Single room</option> 
-        <option value="double">Roommate</option>
-      </select>
-      <br><br>
-
-      <label for="age">What age range are you in?</label><br>
-      <select name="age" id="age" required>
-        <option value="none"></option> 
-        <option value="under 19">18 or younger</option> 
-        <option value="under 21">19-20</option>
-        <option value="21 or more">21 or older</option>
-      </select>
-      <br><br>
-
-      <label for="gender">What gender do you identify as?</label><br>
-      <select name="gender" id="gender" required>
-        <option value="none"></option> 
-        <option value="female">Female</option>
-        <option value="male">Male</option>
-        <option value="other">something else</option> 
-      </select>
-      <br><br>
-
-      <label for="sameGenderPref">Do you want to share a room with someone of the same gender?</label><br>
-      <select name="sameGenderPref" id="sameGenderPref" required>
-        <option value="none"></option> 
-        <option value="no">No</option> 
-        <option value="yes">Yes</option>
-      </select>
-      <br><br>
-
-      <label for="wakeTime">What time do you generally wake up around?</label><br>
-      <select name="wakeTime" id="wakeTime" required>
-        <option value="none"></option> 
-        <option value="very early">Before 7am</option> 
-        <option value="early">Between 7am-9am</option>
-        <option value="mid">Between 9am-12pm</option>
-        <option value="late">Between 12pm-3pm</option>
-        <option value="very late">After 3pm</option>
-      </select>
-      <br><br>
-
-      <label for="sleepTime">What time do you generally fall asleep around?</label><br>
-      <select name="sleepTime" id="sleepTime" required>
-        <option value="none"></option> 
-        <option value="very early">Before 9pm</option>
-        <option value="early">Between 9pm-11pm</option>
-        <option value="mid">Between 11pm-1am</option>
-        <option value="late">Between 1am-3am</option> 
-        <option value="very late">After 3am</option>
-      </select>
-      <br><br>
-
-      <label for="alcoholPref">Would you want to share a room with someone who drinks alcohol?</label><br>
-      <select name="alcoholPref" id="alcoholPref" required>
-        <option value="none"></option>
-        <option value="under21">I'm under 21</option> 
-        <option value="no">No</option>
-        <option value="yes">Yes</option>
-      </select>
-      <br><br>
-
-      <button type="button" id="submit">Submit</button>
+    <!-- The JS will build the form inside this div -->
+    <div id="preference-form-container">
+        <p>Loading preferences...</p>
     </div>
 
-    <script src="SavePreferences.js" defer ></script>
+    <br>
+    <button type="button" id="submit" style="display: none;">Submit</button>
+
+    <script src="SavePreferences.js" defer></script>
 
   </body>
 </html>

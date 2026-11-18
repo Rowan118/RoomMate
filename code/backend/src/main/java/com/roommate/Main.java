@@ -1,13 +1,17 @@
 package com.roommate;
 
+import java.net.InetSocketAddress;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.concurrent.Executors;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.roommate.Databases.Database;
 import com.roommate.Databases.LoginDatabase;
 import com.roommate.Databases.PreferencesDatabase;
 import com.roommate.Handlers.ApiHandler;
 import com.sun.net.httpserver.HttpServer;
-
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
 
 public class Main {
 
@@ -16,6 +20,26 @@ public class Main {
         String loginDbPath = System.getenv().getOrDefault("LOGIN_DB", "logins.db");
         String preferenceDbPath = System.getenv().getOrDefault("PREF_DB", "preferences.db");
         String configurationPath = System.getenv().getOrDefault("CONF_DIR", "configuration");
+
+        JsonObject preferencesSettings;
+        try {
+            // Construct the path to the JSON file
+            String preferencesFilePath = Paths.get(configurationPath, "preferences.json").toString();
+            
+            // Read the file into a String
+            String jsonContent = new String(Files.readAllBytes(Paths.get(preferencesFilePath)));
+            
+            // Parse the String into a JsonObject using Gson
+            preferencesSettings = JsonParser.parseString(jsonContent).getAsJsonObject();
+            
+            System.out.println("Successfully loaded preferences schema from: " + preferencesFilePath);
+        } catch (Exception e) {
+            System.err.println("Failed to retrieve or parse preferences settings file: " + e.getMessage());
+            System.err.println("Exiting backend...");
+            System.exit(1);
+            return;
+        }
+
 
         // Debug path prints
         System.out.println("cwd: " + System.getenv().get("PWD") +
@@ -26,7 +50,7 @@ public class Main {
         // Initialize databases
         Database loginDb = new LoginDatabase(loginDbPath);
         loginDb.init();
-        PreferencesDatabase preferenceDb = new PreferencesDatabase(preferenceDbPath);
+        PreferencesDatabase preferenceDb = new PreferencesDatabase(preferenceDbPath, preferencesSettings);
         preferenceDb.init();
 
         // Initialize services

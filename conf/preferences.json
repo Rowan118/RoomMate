@@ -22,6 +22,7 @@
     },
     "room_type": {
         "label": "Would you prefer a roommate or single room?",
+        "type": "select",
         "options": ["Single", "Double"],
         "required": true
     },
@@ -38,25 +39,31 @@
         "required": true
     },
     "prefers_same_gender": {
-        "Label": "Would you rather only share a room with someone of the same gender?",
+        "label": "Would you rather only share a room with someone of the same gender?",
         "type": "boolean",
         "required": true
     },
     "wake_time": {
-        "Label": "What time do you generally wake up around?",
-        "type": "option",
+        "label": "What time do you generally wake up around?",
+        "type": "select",
         "options": ["Before 7AM", "Between 7AM-9AM", "Between 9AM-12PM", "Between 12PM-3PM", "After 3PM"],
         "required": true
     },
     "sleep_time": {
-        "Label": "What time do you generally fall sleep around?",
-        "type": "option",
+        "label": "What time do you generally fall sleep around?",
+        "type": "select",
         "options": ["Before 9PM", "Between 9PM-11PM", "Between 11PM-1AM", "Between 1AM-3AM", "After 3AM"],
         "required": true
     },
     "alcohol_preference": {
-        "Label": "Would you want to share a room with someone who drinks alcohol?",
+        "label": "Would you want to share a room with someone who drinks alcohol?",
         "type": "boolean",
+        "required": true
+    },
+    "temperature_preference": {
+        "label": "What temperature range are you comfortable with?",
+        "type": "select",
+        "options": ["<68°F", "68°F-72°F", "72°F+"],
         "required": true
     }
 }
