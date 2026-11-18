@@ -106,4 +106,9 @@ final class RegisterHandler implements ApiRoute {
         return "POST";
     }
 
+    @Override 
+    public String getPath() {
+        return "/api/register";
+    }
+
 }

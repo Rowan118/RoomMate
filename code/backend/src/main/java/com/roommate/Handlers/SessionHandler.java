@@ -46,4 +46,9 @@ final class SessionHandler implements ApiRoute {
         return "GET";
     }
 
+    @Override
+    public String getPath() {
+        return "/api/session";
+    }
+
 }

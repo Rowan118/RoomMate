@@ -55,4 +55,9 @@ final class RaEmailHandler implements ApiRoute {
         return "POST";
     }
 
+    @Override
+    public String getPath() {
+        return "/api/ra_emails";
+    }
+
 }

@@ -4,7 +4,6 @@ import com.roommate.SessionStore;
 import com.sun.net.httpserver.HttpExchange;
 
 /**
- * 
  * LogoutHandler
  */
 final class LogoutHandler implements ApiRoute {
@@ -41,6 +40,11 @@ final class LogoutHandler implements ApiRoute {
     @Override
     public String getMethod() {
         return "POST";
+    }
+
+    @Override
+    public String getPath() {
+        return "/api/logout";
     }
 
 }

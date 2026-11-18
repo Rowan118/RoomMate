@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -39,18 +40,22 @@ public class ApiHandler implements HttpHandler {
      * @param preferences A database to keep track of user preferences.
      */
     public ApiHandler(UserDao users, SessionStore sessions, PreferencesService preferencesService) {
-        // Register all routes here.
-        routes.put("/api/register", new RegisterHandler(users));
-        routes.put("/api/login", new LoginHandler(users, sessions));
-        routes.put("/api/session", new SessionHandler(sessions));
-        routes.put("/api/logout", new LogoutHandler(sessions));
-        routes.put("/api/ra_emails", new RaEmailHandler());
-        routes.put("/api/addPreferences", new AddPreferencesHandler(users, sessions, preferencesService));
-        routes.put("/api/modifyPreferences", new ModifyPreferencesHandler());
-        
-        // Routes for accessing backend settings from the frontend.
-        routes.put("/api/config", new ConfigHandler("preferences.json"));
-        routes.put("/api/dorms", new ConfigHandler("dorms.json"));
+        // Add handlers to be utilized
+        List<ApiRoute> handlerList = List.of(
+            new RegisterHandler(users),
+            new LoginHandler(users, sessions),
+            new SessionHandler(sessions),
+            new LogoutHandler(sessions),
+            new RaEmailHandler(),
+            new AddPreferencesHandler(users, sessions, preferencesService),
+            new ModifyPreferencesHandler(),
+            new ConfigHandler("preferences.json", "/api/config"),
+            new ConfigHandler("dorms.json", "/api/dorms")
+        );
+
+        for (ApiRoute handler : handlerList) {
+            routes.put(handler.getPath(), handler);
+        }
     }
 
 
@@ -144,6 +149,7 @@ public class ApiHandler implements HttpHandler {
         if (origin != null && !origin.isBlank()) {
             headers.set("Access-Control-Allow-Origin", origin);
         } else {
+            // TODO: Figure out how to handle these hardcoded addresses.
             headers.set("Access-Control-Allow-Origin", "http://localhost:8000");
         }
 

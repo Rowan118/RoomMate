@@ -90,4 +90,9 @@ final class LoginHandler implements ApiRoute {
     public String getMethod() {
         return "POST";
     }
+
+    @Override
+    public String getPath() {
+        return "/api/login";
+    }
 }

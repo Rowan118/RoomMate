@@ -58,4 +58,9 @@ public class AddPreferencesHandler implements ApiRoute {
         return "POST";
     }
 
+    @Override
+    public String getPath() {
+        return "/api/addPreferences";
+    }
+
 }

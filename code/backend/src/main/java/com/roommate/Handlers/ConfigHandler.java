@@ -11,14 +11,21 @@ import com.sun.net.httpserver.HttpExchange;
  */
 public class ConfigHandler implements ApiRoute {
     private final String filename;
+    private final String httpPath;
 
-    public ConfigHandler(String filename) {
+    public ConfigHandler(String filename, String httpPath) {
         this.filename = filename;
+        this.httpPath = httpPath;
     }
 
     @Override
     public String getMethod() {
         return "GET";
+    }
+
+    @Override
+    public String getPath() {
+        return httpPath;
     }
 
     @Override
