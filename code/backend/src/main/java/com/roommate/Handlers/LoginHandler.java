@@ -37,9 +37,9 @@ final class LoginHandler implements ApiEndpoint {
      */
     @Override
     public void handle(HttpExchange exchange) throws Exception {
-        JsonObject body = readBody(exchange);
-        String email = optString(body, "email");
-        String password = optString(body, "password");
+        JsonObject body = ApiRouter.readBody(exchange);
+        String email = ApiRouter.optString(body, "email");
+        String password = ApiRouter.optString(body, "password");
 
         if (email == null || password == null) {
             ApiRouter.sendJson(exchange, 400, ApiRouter.error("Email and password are required"));
@@ -61,30 +61,6 @@ final class LoginHandler implements ApiEndpoint {
         ApiRouter.sendJson(exchange, 200, ApiRouter.success("Logged in"));
     }
 
-    /**
-     * Read http body
-     * @param exchange Http request object
-     * @return Returns a JsonObject that neatly contains the http request's data.
-     * @throws IOException May throw an IOException if bytes fail to be read.
-     */
-    private JsonObject readBody(HttpExchange exchange) throws IOException {
-        try (InputStream in = exchange.getRequestBody()) {
-            String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-            return raw.isBlank() ? new JsonObject() : JsonParser.parseString(raw).getAsJsonObject();
-        }
-    }
-
-    /**
-     * Check if a JsonObject contains a key and return its value.
-     * @param obj The Json instance.
-     * @param key The key to check.
-     * @return Returns the value associated with the key.
-     */
-    private String optString(JsonObject obj, String key) {
-        return obj.has(key) && !obj.get(key).isJsonNull()
-            ? obj.get(key).getAsString()
-            : null;
-    }
 
     @Override
     public String getMethod() {

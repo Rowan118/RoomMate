@@ -22,17 +22,8 @@ public class AddPreferencesHandler implements ApiEndpoint {
 
     @Override
     public void handle(HttpExchange exchange) throws Exception {
-        String email = sessions.getEmail(ApiRouter.readCookie(exchange, "sessionId"));
-        if (email == null) {
-            ApiRouter.sendJson(exchange, 401, ApiRouter.error("Not logged in"));
-            return;
-        }
-
-        Long userId = users.findUserIdByEmail(email);
-        if (userId == null) {
-            ApiRouter.sendJson(exchange, 401, ApiRouter.error("Not logged in"));
-            return;
-        }
+        Long userId = ApiRouter.getAuthenticatedUserId(exchange, sessions, users);
+        if (userId == null) return;
 
         JsonObject body = ApiRouter.readBody(exchange);
         if (body.size() == 0) {

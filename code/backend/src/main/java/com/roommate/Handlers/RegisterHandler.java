@@ -1,17 +1,12 @@
 package com.roommate.Handlers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.roommate.UserDao;
 import com.sun.net.httpserver.HttpExchange;
 
 /**
- * 
  * RegisterHandler
  */
 final class RegisterHandler implements ApiEndpoint {
@@ -35,9 +30,9 @@ final class RegisterHandler implements ApiEndpoint {
     @Override
     public void handle(HttpExchange exchange) throws Exception {
         JsonObject body = ApiRouter.readBody(exchange);
-        String email = optString(body, "email");
-        String password = optString(body, "password");
-        String accountType = optString(body, "account");
+        String email = ApiRouter.optString(body, "email");
+        String password = ApiRouter.optString(body, "password");
+        String accountType = ApiRouter.optString(body, "account");
 
         if (accountType == null || accountType.toLowerCase().equals("none")) {
             ApiRouter.sendJson(exchange, 400, ApiRouter.error("Please select an account type"));
@@ -69,12 +64,6 @@ final class RegisterHandler implements ApiEndpoint {
         }
 
         ApiRouter.sendJson(exchange, 201, ApiRouter.success("Account created"));
-    }
-
-    private String optString(JsonObject obj, String key) {
-        return obj.has(key) && !obj.get(key).isJsonNull()
-            ? obj.get(key).getAsString()
-            : null;
     }
 
     /**

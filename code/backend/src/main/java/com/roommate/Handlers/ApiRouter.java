@@ -193,4 +193,49 @@ public class ApiRouter implements HttpHandler {
         }
         return null;
     }
+
+    /**
+     * Check if a JsonObject contains a key and return its value.
+     * @param obj The Json instance.
+     * @param key The key to check.
+     * @return Returns the value associated with the key.
+     */
+    static protected String optString(JsonObject obj, String key) {
+        return obj.has(key) && !obj.get(key).isJsonNull()
+            ? obj.get(key).getAsString()
+            : null;
+    }
+
+    /**
+     * Validates the session cookie and returns the user's ID.
+     * If not logged in, this method handles sending the 401 error response automatically.
+     * @return The userId, or null if not logged in (and the response has already been sent).
+     */
+    /**
+     * Validates the session cookie and returns the user's ID.
+     * If they're not logged in, then a 401 error will be automatically sent.
+     * @param exchange The HTTP request
+     * @param sessions SessionStore of sessions
+     * @param users UserDao of users
+     * @return The userID if logged in, null if not.
+     * @throws IOException Throws an IOException if an unexpected IO Stream failure happens.
+     * @throws SQLException Throws an SQLException if the SQL operation unexpectedly fails.
+     */
+    static protected Long getAuthenticatedUserId(HttpExchange exchange, SessionStore sessions, UserDao users) throws IOException, SQLException{
+        String sessionId = readCookie(exchange, "sessionId");
+        String email = sessions.getEmail(sessionId);
+        
+        if (email == null) {
+            sendJson(exchange, 401, error("Not logged in"));
+            return null;
+        }
+        
+        Long userId = users.findUserIdByEmail(email);
+        if (userId == null) {
+            sendJson(exchange, 401, error("Not logged in"));
+            return null;
+        }
+        
+        return userId;
+    }
 }
