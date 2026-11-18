@@ -2,6 +2,7 @@ package com.roommate.Services;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -64,5 +65,37 @@ public class PreferencesService {
 
     public void overwrite(long userId, JsonObject body) throws SQLException {
         writePreferences(userId, body, "INSERT OR REPLACE INTO");
+    }
+
+    public JsonObject getPreferences(long userId) throws SQLException {
+        String sql = "SELECT * FROM student_preferences WHERE user_id = ?";
+        JsonObject schema = preferences.getSchema();
+        JsonObject result = new JsonObject();
+
+        try (Connection conn = preferences.connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setLong(1, userId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // Loop through the schema keys to fetch the exact columns we expect
+                    for (String key : schema.keySet()) {
+                        String type = schema.getAsJsonObject(key).has("type") 
+                            ? schema.getAsJsonObject(key).get("type").getAsString() 
+                            : "text";
+
+                        if ("boolean".equals(type)) {
+                            // Convert SQLite 1/0 back to JSON true/false
+                            result.addProperty(key, rs.getInt(key) == 1);
+                        } else {
+                            result.addProperty(key, rs.getString(key));
+                        }
+                    }
+                    return result;
+                }
+            }
+        }
+        return null; // Returns null if the user hasn't filled out their preferences yet
     }
 }
