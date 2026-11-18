@@ -16,9 +16,9 @@ public class PreferencesService {
         this.preferences = preferences;
     }
 
-    public void save(long userId, JsonObject body) throws SQLException {
+    private void writePreferences(long userId, JsonObject body, String SQLCommand) throws SQLException {
         // 1. Build the SQL dynamically
-        StringBuilder sql = new StringBuilder("INSERT INTO student_preferences (user_id");
+        StringBuilder sql = new StringBuilder(SQLCommand + " student_preferences (user_id");
         StringBuilder placeholders = new StringBuilder(") VALUES (?");
 
         for (String key : body.keySet()) {
@@ -55,5 +55,14 @@ public class PreferencesService {
             }
             ps.executeUpdate();
         }
+
+    }
+
+    public void save(long userId, JsonObject body) throws SQLException {
+        writePreferences(userId, body, "INSERT INTO");
+    }
+
+    public void overwrite(long userId, JsonObject body) throws SQLException {
+        writePreferences(userId, body, "INSERT OR REPLACE INTO");
     }
 }

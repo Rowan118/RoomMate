@@ -48,7 +48,7 @@ public class ApiRouter implements HttpHandler {
             new LogoutHandler(sessions),
             new RaEmailHandler(),
             new AddPreferencesHandler(users, sessions, preferencesService),
-            new ModifyPreferencesHandler(),
+            new ModifyPreferencesHandler(users, sessions, preferencesService),
             new ConfigHandler("preferences.json", "/api/config"),
             new ConfigHandler("dorms.json", "/api/dorms")
         );
