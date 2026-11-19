@@ -13,15 +13,21 @@
     async function initForm() {
         try {
             // Fetch both configs
-            const [schemaRes, dormsRes] = await Promise.all([
+            const [schemaRes, dormsRes, preferencesRes] = await Promise.all([
                 fetch(`${API_BASE}/api/config`),
-                fetch(`${API_BASE}/api/dorms`)
+                fetch(`${API_BASE}/api/dorms`),
+                fetch(`${API_BASE}/api/getPreferences`, { credentials: "include" })
             ]);
             
             if (!schemaRes.ok || !dormsRes.ok) throw new Error("Failed to load config");
+            if (!preferencesRes.ok) {
+                const data = await preferencesRes.json();
+                throw new Error(data.message || "Failed to load saved preferences");
+            }
             
             schema = await schemaRes.json();
             dorms = await dormsRes.json();
+            const preferencesData = await preferencesRes.json();
             formContainer.innerHTML = ""; 
 
             for (const [key, config] of Object.entries(schema)) {
@@ -64,6 +70,13 @@
                 formContainer.appendChild(input);
                 formContainer.appendChild(document.createElement("br"));
                 formContainer.appendChild(document.createElement("br"));
+            }
+
+            for (const [key, value] of Object.entries(preferencesData.preferences)) {
+                const input = document.getElementById(key);
+                if (input && value != null) {
+                    input.value = String(value);
+                }
             }
             submitInput.style.display = "block";
         } catch (err) {
@@ -133,7 +146,7 @@
         }
 
         try {
-            const response = await fetch(`${API_BASE}/api/addPreferences`, {
+            const response = await fetch(`${API_BASE}/api/modifyPreferences`, {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },
