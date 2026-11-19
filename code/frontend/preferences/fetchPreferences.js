@@ -7,27 +7,46 @@
     const submitInput = document.getElementById("submit");
     const error = document.getElementById("error");
     
+    //Fetches the saved preferences information from the backend and displays it
+    //The user preferences are added to the dropdown as the default option
+    //Returns an error if either the preference options or the user data can't be found
+
     let schema = {};
     let dorms = {};
+    let preferences = {};
 
     async function initForm() {
         try {
-            // Fetch both configs
+            // Fetch the json data for the preference options and the user's saved preferences
             const [schemaRes, dormsRes, preferencesRes] = await Promise.all([
                 fetch(`${API_BASE}/api/config`),
                 fetch(`${API_BASE}/api/dorms`),
                 fetch(`${API_BASE}/api/getPreferences`, { credentials: "include" })
             ]);
             
-            if (!schemaRes.ok || !dormsRes.ok) throw new Error("Failed to load config");
+            if (!schemaRes.ok) {
+                const errorCheck = await schemaRes.json();
+                error.innerText = errorCheck.message || "Failed to load preferences information";
+                return;
+            }
+
+            if (!dormsRes.ok) {
+                const errorCheck = await dormsRes.json();
+                error.innerText = errorCheck.message || "Failed to load dorm information"
+                return;
+            }
+
             if (!preferencesRes.ok) {
-                const data = await preferencesRes.json();
-                throw new Error(data.message || "Failed to load saved preferences");
+                const errorCheck = await preferencesRes.json();
+                error.innerText = errorCheck.message || "Failed to find any saved preferences";
+                return;
             }
             
+            //Loads the information into the option dropdowns
+            //Dynamic, so options can be changed later on
             schema = await schemaRes.json();
             dorms = await dormsRes.json();
-            const preferencesData = await preferencesRes.json();
+            preferences = await preferencesRes.json();
             formContainer.innerHTML = ""; 
 
             for (const [key, config] of Object.entries(schema)) {
@@ -64,6 +83,13 @@
                 input.id = key;
                 input.name = key;
                 if (config.required) input.required = true;
+                if (preferences.preferences[key] != null) {
+                    input.value = String(preferences.preferences[key]);
+                }
+                else {
+                    error.innerText = "Some preferences could not be found";
+                    return;
+                }
 
                 formContainer.appendChild(label);
                 formContainer.appendChild(document.createElement("br"));
@@ -72,15 +98,9 @@
                 formContainer.appendChild(document.createElement("br"));
             }
 
-            for (const [key, value] of Object.entries(preferencesData.preferences)) {
-                const input = document.getElementById(key);
-                if (input && value != null) {
-                    input.value = String(value);
-                }
-            }
             submitInput.style.display = "block";
         } catch (err) {
-            formContainer.innerHTML = "<p style='color:red;'>Error loading configuration from backend.</p>";
+            error.innerText = "Error loading configuration from backend.";
             console.error(err);
         }
     }

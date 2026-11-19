@@ -1,6 +1,7 @@
 package com.roommate;
 
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.Executors;
@@ -30,7 +31,7 @@ public class Main {
             String preferencesFilePath = Paths.get(configurationPath, "preferences.json").toString();
             
             // Read the file into a String
-            String jsonContent = new String(Files.readAllBytes(Paths.get(preferencesFilePath)));
+            String jsonContent = Files.readString(Paths.get(preferencesFilePath), StandardCharsets.UTF_8);
             
             // Parse the String into a JsonObject using Gson
             preferencesSettings = JsonParser.parseString(jsonContent).getAsJsonObject();
