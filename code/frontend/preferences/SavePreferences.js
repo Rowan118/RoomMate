@@ -18,7 +18,15 @@
                 fetch(`${API_BASE}/api/dorms`)
             ]);
             
-            if (!schemaRes.ok || !dormsRes.ok) throw new Error("Failed to load config");
+            if (!schemaRes.ok) {
+                const errorCheck = await schemaRes.json();
+                error.innerText = errorCheck.message || "Failed to load preference information";
+                return;
+            }
+            if (!dormsRes.ok) {
+                const errorCheck = await dormsRes.json();
+                error.innerText = errorCheck.message || "Failed to load dorm information"
+            }
             
             schema = await schemaRes.json();
             dorms = await dormsRes.json();
@@ -67,7 +75,7 @@
             }
             submitInput.style.display = "block";
         } catch (err) {
-            formContainer.innerHTML = "<p style='color:red;'>Error loading configuration from backend.</p>";
+            error.innerText = "Error loading configuration from backend.";
             console.error(err);
         }
     }

@@ -2,6 +2,7 @@ package com.roommate.Services;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -16,9 +17,9 @@ public class PreferencesService {
         this.preferences = preferences;
     }
 
-    public void save(long userId, JsonObject body) throws SQLException {
+    private void writePreferences(long userId, JsonObject body, String SQLCommand) throws SQLException {
         // 1. Build the SQL dynamically
-        StringBuilder sql = new StringBuilder("INSERT INTO student_preferences (user_id");
+        StringBuilder sql = new StringBuilder(SQLCommand + " student_preferences (user_id");
         StringBuilder placeholders = new StringBuilder(") VALUES (?");
 
         for (String key : body.keySet()) {
@@ -55,5 +56,46 @@ public class PreferencesService {
             }
             ps.executeUpdate();
         }
+
+    }
+
+    public void save(long userId, JsonObject body) throws SQLException {
+        writePreferences(userId, body, "INSERT INTO");
+    }
+
+    public void overwrite(long userId, JsonObject body) throws SQLException {
+        writePreferences(userId, body, "INSERT OR REPLACE INTO");
+    }
+
+    public JsonObject getPreferences(long userId) throws SQLException {
+        String sql = "SELECT * FROM student_preferences WHERE user_id = ?";
+        JsonObject schema = preferences.getSchema();
+        JsonObject result = new JsonObject();
+
+        try (Connection conn = preferences.connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setLong(1, userId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // Loop through the schema keys to fetch the exact columns we expect
+                    for (String key : schema.keySet()) {
+                        String type = schema.getAsJsonObject(key).has("type") 
+                            ? schema.getAsJsonObject(key).get("type").getAsString() 
+                            : "text";
+
+                        if ("boolean".equals(type)) {
+                            // Convert SQLite 1/0 back to JSON true/false
+                            result.addProperty(key, rs.getInt(key) == 1);
+                        } else {
+                            result.addProperty(key, rs.getString(key));
+                        }
+                    }
+                    return result;
+                }
+            }
+        }
+        return null; // Returns null if the user hasn't filled out their preferences yet
     }
 }

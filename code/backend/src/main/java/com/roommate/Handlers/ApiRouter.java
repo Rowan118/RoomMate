@@ -48,7 +48,8 @@ public class ApiRouter implements HttpHandler {
             new LogoutHandler(sessions),
             new RaEmailHandler(),
             new AddPreferencesHandler(users, sessions, preferencesService),
-            new ModifyPreferencesHandler(),
+            new ModifyPreferencesHandler(users, sessions, preferencesService),
+            new GetPreferencesHandler(users, sessions, preferencesService),
             new ConfigHandler("preferences.json", "/api/config"),
             new ConfigHandler("dorms.json", "/api/dorms")
         );
@@ -206,11 +207,6 @@ public class ApiRouter implements HttpHandler {
             : null;
     }
 
-    /**
-     * Validates the session cookie and returns the user's ID.
-     * If not logged in, this method handles sending the 401 error response automatically.
-     * @return The userId, or null if not logged in (and the response has already been sent).
-     */
     /**
      * Validates the session cookie and returns the user's ID.
      * If they're not logged in, then a 401 error will be automatically sent.
