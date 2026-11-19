@@ -18,9 +18,14 @@
                 fetch(`${API_BASE}/api/dorms`)
             ]);
             
-            if (!schemaRes.ok || !dormsRes.ok) {
-                error.innerText = "Failed to load config";
+            if (!schemaRes.ok) {
+                const errorCheck = await schemaRes.json();
+                error.innerText = errorCheck.message || "Failed to load preference information";
                 return;
+            }
+            if (!dormsRes.ok) {
+                const errorCheck = await dormsRes.json();
+                error.innerText = errorCheck.message || "Failed to load dorm information"
             }
             
             schema = await schemaRes.json();
