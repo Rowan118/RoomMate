@@ -1,6 +1,7 @@
-const API_BASE = window.location.hostname === "127.0.0.1" 
-    ? "http://127.0.0.1:8080" 
-    : "http://localhost:8080";
+const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+const API_BASE = isLocal && window.location.port !== "8080"
+    ? `http://${window.location.hostname}:8080`
+    : "";
 
 const sessionMessage = document.getElementById("sessionMessage");
 
