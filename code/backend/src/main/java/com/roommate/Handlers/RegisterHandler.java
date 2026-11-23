@@ -3,7 +3,7 @@ package com.roommate.Handlers;
 import java.sql.SQLException;
 
 import com.google.gson.JsonObject;
-import com.roommate.UserDao;
+import com.roommate.Services.UserDao;
 import com.sun.net.httpserver.HttpExchange;
 
 /**
