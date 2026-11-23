@@ -91,7 +91,7 @@ window.PreferenceUtils = {
             const constraints = dorms[selectedDormName].constraints;
             for (const [prefKey, allowedValues] of Object.entries(constraints)) {
                 if (!allowedValues.includes(formData[prefKey])) {
-                    return `${selectedDormName} requires your ${prefKey} to be one of: ${allowedValues.join(", ")}`;
+                    return `${selectedDormName} only allows ${prefKey} preferences to be ${allowedValues.join(", ")}`;
                 }
             }
         }
