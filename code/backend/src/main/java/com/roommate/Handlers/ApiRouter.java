@@ -52,7 +52,7 @@ public class ApiRouter implements HttpHandler {
             new GetPreferencesHandler(users, sessions, preferencesService),
             new ConfigHandler("preferences.json", "/api/config"),
             new ConfigHandler("dorms.json", "/api/dorms"),
-            new GetAccountTypeHandler()
+            new GetAccountTypeHandler(users, sessions)
         );
 
         for (ApiEndpoint handler : handlerList) {

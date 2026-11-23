@@ -47,7 +47,7 @@ final class LoginHandler implements ApiEndpoint {
         }
 
         sessions.removeSession(ApiRouter.readCookie(exchange, "sessionId"));
-        String sessionId = sessions.createSession(email);
+        String sessionId = sessions.createSession(users, email);
         exchange.getResponseHeaders().add(
             "Set-Cookie",
             "sessionId=" + sessionId + "; Path=/; HttpOnly; SameSite=Lax"
