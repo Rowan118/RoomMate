@@ -1,0 +1,11 @@
+[
+    {
+        "if": {
+            "age": ["<=18", "19-20"]
+        },
+        "then": {
+            "alcohol_preference": ["false"]
+        },
+        "error": "Alcohol preference must be set to 'No' if you are under 21."
+    }
+]

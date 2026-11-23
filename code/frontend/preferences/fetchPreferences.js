@@ -1,54 +1,43 @@
 (() => {
-const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
-const API_BASE = isLocal && window.location.port !== "8080"
-    ? `http://${window.location.hostname}:8080`
-    : "";
+    const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+    const API_BASE = isLocal && window.location.port !== "8080"
+        ? `http://${window.location.hostname}:8080`
+        : "";
+
     const formContainer = document.getElementById("preference-form-container");
     const submitInput = document.getElementById("submit");
     const error = document.getElementById("error");
     
-    //Fetches the saved preferences information from the backend and displays it
-    //The user preferences are added to the dropdown as the default option
-    //Returns an error if either the preference options or the user data can't be found
-
     let schema = {};
     let dorms = {};
-    let preferences = {};
+    let rules = [];
+    let savedPreferences = {};
 
     async function initForm() {
         try {
-            // Fetch the json data for the preference options and the user's saved preferences
-            const [schemaRes, dormsRes, preferencesRes] = await Promise.all([
+            const [schemaRes, dormsRes, rulesRes, preferencesRes] = await Promise.all([
                 fetch(`${API_BASE}/api/config`),
                 fetch(`${API_BASE}/api/dorms`),
+                fetch(`${API_BASE}/api/rules`),
                 fetch(`${API_BASE}/api/getPreferences`, { credentials: "include" })
             ]);
             
-            if (!schemaRes.ok) {
-                const errorCheck = await schemaRes.json();
-                error.innerText = errorCheck.message || "Failed to load preferences information";
-                return;
+            if (!schemaRes.ok || !dormsRes.ok || !rulesRes.ok) {
+                throw new Error("Failed to load configuration files");
             }
-
-            if (!dormsRes.ok) {
-                const errorCheck = await dormsRes.json();
-                error.innerText = errorCheck.message || "Failed to load dorm information"
-                return;
-            }
-
             if (!preferencesRes.ok) {
-                const errorCheck = await preferencesRes.json();
-                error.innerText = errorCheck.message || "Failed to find any saved preferences";
-                return;
+                throw new Error("Failed to find any saved preferences");
             }
-            
-            //Loads the information into the option dropdowns
-            //Dynamic, so options can be changed later on
+
             schema = await schemaRes.json();
             dorms = await dormsRes.json();
-            preferences = await preferencesRes.json();
+            rules = await rulesRes.json();
+            const prefData = await preferencesRes.json();
+            savedPreferences = prefData.preferences;
+            
             formContainer.innerHTML = ""; 
 
+            // Dynamically build the form
             for (const [key, config] of Object.entries(schema)) {
                 const label = document.createElement("label");
                 label.htmlFor = key;
@@ -83,12 +72,10 @@ const API_BASE = isLocal && window.location.port !== "8080"
                 input.id = key;
                 input.name = key;
                 if (config.required) input.required = true;
-                if (preferences.preferences[key] != null) {
-                    input.value = String(preferences.preferences[key]);
-                }
-                else {
-                    error.innerText = "Some preferences could not be found";
-                    return;
+
+                // Apply the saved preference to the input
+                if (savedPreferences[key] != null) {
+                    input.value = String(savedPreferences[key]);
                 }
 
                 formContainer.appendChild(label);
@@ -97,10 +84,9 @@ const API_BASE = isLocal && window.location.port !== "8080"
                 formContainer.appendChild(document.createElement("br"));
                 formContainer.appendChild(document.createElement("br"));
             }
-
             submitInput.style.display = "block";
         } catch (err) {
-            error.innerText = "Error loading configuration from backend.";
+            formContainer.innerHTML = `<p style='color:red;'>Error: ${err.message}</p>`;
             console.error(err);
         }
     }
@@ -121,50 +107,43 @@ const API_BASE = isLocal && window.location.port !== "8080"
             formData[key] = value;
         }
 
-        // --- DYNAMIC BUSINESS LOGIC ---
-        // Find the selected dorm, gender, and room type by checking values against dorms.json
+        // 1. DYNAMIC DORM CONSTRAINTS
         let selectedDormName = null;
-        let selectedGender = null;
-        let selectedRoomType = null;
+        for (const val of Object.values(formData)) {
+            if (dorms[val]) { selectedDormName = val; break; }
+        }
 
-        for (const key in formData) {
-            const val = formData[key];
-            if (dorms[val]) selectedDormName = val;
-            
-            if (schema[key] && schema[key].options) {
-                if (schema[key].options.includes("Man") || schema[key].options.includes("Woman")) selectedGender = val;
-                if (schema[key].options.includes("Single") || schema[key].options.includes("Double")) selectedRoomType = val;
+        if (selectedDormName && dorms[selectedDormName].constraints) {
+            const constraints = dorms[selectedDormName].constraints;
+            for (const [prefKey, allowedValues] of Object.entries(constraints)) {
+                if (!allowedValues.includes(formData[prefKey])) {
+                    error.innerText = `${selectedDormName} requires your ${prefKey} to be one of: ${allowedValues.join(", ")}`;
+                    return false;
+                }
             }
         }
 
-        if (selectedDormName && selectedGender) {
-            const dormData = dorms[selectedDormName];
-            if (dormData.allowed_genders && !dormData.allowed_genders.includes(selectedGender)) {
-                error.innerText = `${selectedDormName} does not allow ${selectedGender}`;
-                return false;
+        // 2. DYNAMIC CROSS-PREFERENCE RULES
+        for (const rule of rules) {
+            let conditionMet = true;
+            for (const [key, allowedValues] of Object.entries(rule.if)) {
+                if (!allowedValues.includes(formData[key])) {
+                    conditionMet = false;
+                    break;
+                }
             }
-            if (selectedRoomType === "Single" && !dormData.has_singles_rooms) {
-                error.innerText = `${selectedDormName} does not have single rooms`;
-                return false;
-            }
-            if (selectedRoomType === "Double" && !dormData.has_doubles_rooms) {
-                error.innerText = `${selectedDormName} does not have double rooms`;
-                return false;
+
+            if (conditionMet) {
+                for (const [key, requiredValues] of Object.entries(rule.then)) {
+                    if (!requiredValues.includes(formData[key])) {
+                        error.innerText = rule.error;
+                        return false;
+                    }
+                }
             }
         }
 
-        // Dynamic Age/Alcohol check
-        let ageVal = null;
-        let alcoholVal = null;
-        for (const key in schema) {
-            if (schema[key].options && schema[key].options.includes("<=18")) ageVal = formData[key];
-            if (schema[key].type === "boolean" && schema[key].label.toLowerCase().includes("alcohol")) alcoholVal = formData[key];
-        }
-        if ((ageVal === "<=18" || ageVal === "19-20") && alcoholVal === "true") {
-            error.innerText = "Alcohol preference must be set to No if under 21.";
-            return false;
-        }
-
+        // 3. Send to backend
         try {
             const response = await fetch(`${API_BASE}/api/modifyPreferences`, {
                 method: "POST",

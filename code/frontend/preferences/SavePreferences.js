@@ -10,29 +10,27 @@
     
     let schema = {};
     let dorms = {};
+    let rules = [];
 
     async function initForm() {
         try {
-            // Fetch both configs
-            const [schemaRes, dormsRes] = await Promise.all([
+            const [schemaRes, dormsRes, rulesRes] = await Promise.all([
                 fetch(`${API_BASE}/api/config`),
-                fetch(`${API_BASE}/api/dorms`)
+                fetch(`${API_BASE}/api/dorms`),
+                fetch(`${API_BASE}/api/rules`)
             ]);
             
-            if (!schemaRes.ok) {
-                const errorCheck = await schemaRes.json();
-                error.innerText = errorCheck.message || "Failed to load preference information";
-                return;
+            if (!schemaRes.ok || !dormsRes.ok || !rulesRes.ok) {
+                throw new Error("Failed to load configuration files");
             }
-            if (!dormsRes.ok) {
-                const errorCheck = await dormsRes.json();
-                error.innerText = errorCheck.message || "Failed to load dorm information"
-            }
-            
+
             schema = await schemaRes.json();
             dorms = await dormsRes.json();
+            rules = await rulesRes.json();
+            
             formContainer.innerHTML = ""; 
 
+            // Dynamically build the form
             for (const [key, config] of Object.entries(schema)) {
                 const label = document.createElement("label");
                 label.htmlFor = key;
@@ -76,7 +74,7 @@
             }
             submitInput.style.display = "block";
         } catch (err) {
-            error.innerText = "Error loading configuration from backend.";
+            formContainer.innerHTML = `<p style='color:red;'>Error: ${err.message}</p>`;
             console.error(err);
         }
     }
@@ -97,50 +95,43 @@
             formData[key] = value;
         }
 
-        // --- DYNAMIC BUSINESS LOGIC ---
-        // Find the selected dorm, gender, and room type by checking values against dorms.json
+        // 1. DYNAMIC DORM CONSTRAINTS
         let selectedDormName = null;
-        let selectedGender = null;
-        let selectedRoomType = null;
+        for (const val of Object.values(formData)) {
+            if (dorms[val]) { selectedDormName = val; break; }
+        }
 
-        for (const key in formData) {
-            const val = formData[key];
-            if (dorms[val]) selectedDormName = val;
-            
-            if (schema[key] && schema[key].options) {
-                if (schema[key].options.includes("Man") || schema[key].options.includes("Woman")) selectedGender = val;
-                if (schema[key].options.includes("Single") || schema[key].options.includes("Double")) selectedRoomType = val;
+        if (selectedDormName && dorms[selectedDormName].constraints) {
+            const constraints = dorms[selectedDormName].constraints;
+            for (const [prefKey, allowedValues] of Object.entries(constraints)) {
+                if (!allowedValues.includes(formData[prefKey])) {
+                    error.innerText = `${selectedDormName} requires your ${prefKey} to be one of: ${allowedValues.join(", ")}`;
+                    return false;
+                }
             }
         }
 
-        if (selectedDormName && selectedGender) {
-            const dormData = dorms[selectedDormName];
-            if (dormData.allowed_genders && !dormData.allowed_genders.includes(selectedGender)) {
-                error.innerText = `${selectedDormName} does not allow ${selectedGender}`;
-                return false;
+        // 2. DYNAMIC CROSS-PREFERENCE RULES
+        for (const rule of rules) {
+            let conditionMet = true;
+            for (const [key, allowedValues] of Object.entries(rule.if)) {
+                if (!allowedValues.includes(formData[key])) {
+                    conditionMet = false;
+                    break;
+                }
             }
-            if (selectedRoomType === "Single" && !dormData.has_singles_rooms) {
-                error.innerText = `${selectedDormName} does not have single rooms`;
-                return false;
-            }
-            if (selectedRoomType === "Double" && !dormData.has_doubles_rooms) {
-                error.innerText = `${selectedDormName} does not have double rooms`;
-                return false;
+
+            if (conditionMet) {
+                for (const [key, requiredValues] of Object.entries(rule.then)) {
+                    if (!requiredValues.includes(formData[key])) {
+                        error.innerText = rule.error;
+                        return false;
+                    }
+                }
             }
         }
 
-        // Dynamic Age/Alcohol check
-        let ageVal = null;
-        let alcoholVal = null;
-        for (const key in schema) {
-            if (schema[key].options && schema[key].options.includes("<=18")) ageVal = formData[key];
-            if (schema[key].type === "boolean" && schema[key].label.toLowerCase().includes("alcohol")) alcoholVal = formData[key];
-        }
-        if ((ageVal === "<=18" || ageVal === "19-20") && alcoholVal === "true") {
-            error.innerText = "Alcohol preference must be set to No if under 21.";
-            return false;
-        }
-
+        // 3. Send to backend
         try {
             const response = await fetch(`${API_BASE}/api/addPreferences`, {
                 method: "POST",

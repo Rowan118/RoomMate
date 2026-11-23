@@ -52,6 +52,7 @@ public class ApiRouter implements HttpHandler {
             new GetPreferencesHandler(users, sessions, preferencesService),
             new ConfigHandler("preferences.json", "/api/config"),
             new ConfigHandler("dorms.json", "/api/dorms"),
+            new ConfigHandler("rules.json", "/api/rules"),
             new GetAccountTypeHandler(users, sessions)
         );
 
