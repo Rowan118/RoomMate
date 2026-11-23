@@ -16,19 +16,23 @@ public class GetAccountTypeHandler implements ApiEndpoint {
 
     @Override
     public void handle(HttpExchange exchange) throws Exception {
-        Long userId = ApiRouter.getAuthenticatedUserId(exchange, sessions, users);
-        if (userId == null) return;
+        String sessionId = ApiRouter.readCookie(exchange, "sessionId");
+        if (sessionId == null) return;
 
-        String accountType = sessions.getAccountType(userId.toString());
+        String email = sessions.getEmail(sessionId);
+        if (email == null) {
+            ApiRouter.sendJson(exchange, 401, ApiRouter.error("Not logged in"));
+            return;
+        }
+
+        String accountType = users.getAccountTypeByEmail(email);
         if (accountType == null) {
             ApiRouter.sendJson(exchange, 404, ApiRouter.error("Could not find account type for this user."));
             return;
         }
 
         JsonObject response = ApiRouter.success("Account type retrieved");
-        JsonObject accountTypeResult = new JsonObject();
-        accountTypeResult.addProperty("account_type", accountType);
-        response.add("account_type", accountTypeResult);
+        response.addProperty("account_type", accountType);
         ApiRouter.sendJson(exchange, 200, response);
     }
 
