@@ -1,4 +1,4 @@
-package com.roommate;
+package com.roommate.Services;
 
 import java.util.Map;
 import java.util.UUID;

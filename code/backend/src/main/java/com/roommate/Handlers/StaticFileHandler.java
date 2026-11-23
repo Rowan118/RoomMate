@@ -1,4 +1,4 @@
-package com.roommate;
+package com.roommate.Handlers;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -22,7 +22,7 @@ public final class StaticFileHandler implements HttpHandler{
             ".ico", "image/x-icon");
         private final Path root;
 
-        StaticFileHandler(String dir) {
+        public StaticFileHandler(String dir) {
             this.root = Paths.get(dir).toAbsolutePath().normalize();
         }
 

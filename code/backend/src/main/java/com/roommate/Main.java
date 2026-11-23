@@ -12,11 +12,12 @@ import com.roommate.Databases.Database;
 import com.roommate.Databases.LoginDatabase;
 import com.roommate.Databases.PreferencesDatabase;
 import com.roommate.Handlers.ApiRouter;
+import com.roommate.Handlers.StaticFileHandler;
 import com.sun.net.httpserver.HttpServer;
-
-import com.roommate.StaticFileHandler;
 import com.roommate.Services.PasswordService;
 import com.roommate.Services.PreferencesService;
+import com.roommate.Services.SessionStore;
+import com.roommate.Services.UserDao;
 
 public class Main {
 
