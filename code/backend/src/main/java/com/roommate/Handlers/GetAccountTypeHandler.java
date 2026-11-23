@@ -43,7 +43,7 @@ public class GetAccountTypeHandler implements ApiEndpoint {
 
     @Override
     public String getPath() {
-        return "/api/GetAccountType";
+        return "/api/getAccountType";
     }
     
 }
