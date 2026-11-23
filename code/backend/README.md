@@ -1,4 +1,4 @@
-Dependencies: Maven, Java, Python (optional but recommended)
+Dependencies: Maven, Java v21, Python v3 (optional but recommended)
 
 # How to run
 Make sure your current working directory is `backend`.
