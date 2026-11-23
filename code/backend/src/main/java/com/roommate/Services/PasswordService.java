@@ -31,7 +31,6 @@ public class PasswordService {
         return hash;
     }
 
-    /** Checks a login attempt against the stored value. */
     /**
      * Verify if a password hash matches with a stored hash.
      * @param rawPassword The challenge raw password which (for example could come from) user input from the login screen.

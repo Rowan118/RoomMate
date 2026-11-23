@@ -7,7 +7,10 @@ import java.sql.SQLException;
 
 import com.roommate.Databases.Database;
 
-/** Create an abstraction between the user credentials database to separate database management from server logic*/
+/** Create an abstraction between the user credentials database to separate database management from server logic.
+ *  It's a service to manage login information by establishing a connection to the login database.
+ *  It has features for checking and getting account information as well as adding logins.
+*/
 public class UserDao {
 
     private final Database db;

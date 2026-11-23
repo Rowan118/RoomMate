@@ -1,6 +1,5 @@
 package com.roommate.Services;
 
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,6 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 
  * SessionStore
+ * Manage user sessions.
+ * When users log in, they get a session.
+ * SessionStore manages basic session management.
  */
 public class SessionStore {
     private final Map<String, String> sessions = new ConcurrentHashMap<>();
