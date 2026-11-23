@@ -1,83 +1,25 @@
 (() => {
     const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
     const API_BASE = isLocal && window.location.port !== "8080"
-        ? `http://${window.location.hostname}:8080`
-        : "";
+        ? `http://${window.location.hostname}:8080` : "";
 
     const formContainer = document.getElementById("preference-form-container");
     const submitInput = document.getElementById("submit");
     const error = document.getElementById("error");
     
-    let schema = {};
-    let dorms = {};
+    let schema = {}, dorms = {}, rules = [];
 
     async function initForm() {
         try {
-            // Fetch both configs
-            const [schemaRes, dormsRes] = await Promise.all([
-                fetch(`${API_BASE}/api/config`),
-                fetch(`${API_BASE}/api/dorms`)
-            ]);
+            const configs = await window.PreferenceUtils.fetchConfigs(API_BASE);
+            schema = configs.schema;
+            dorms = configs.dorms;
+            rules = configs.rules;
             
-            if (!schemaRes.ok) {
-                const errorCheck = await schemaRes.json();
-                error.innerText = errorCheck.message || "Failed to load preference information";
-                return;
-            }
-            if (!dormsRes.ok) {
-                const errorCheck = await dormsRes.json();
-                error.innerText = errorCheck.message || "Failed to load dorm information"
-            }
-            
-            schema = await schemaRes.json();
-            dorms = await dormsRes.json();
-            formContainer.innerHTML = ""; 
-
-            for (const [key, config] of Object.entries(schema)) {
-                const label = document.createElement("label");
-                label.htmlFor = key;
-                label.innerText = config.label + ":";
-                
-                let input;
-                if (config.type === "select") {
-                    input = document.createElement("select");
-                    const defaultOption = document.createElement("option");
-                    defaultOption.value = "none";
-                    defaultOption.innerText = "";
-                    input.appendChild(defaultOption);
-
-                    config.options.forEach(opt => {
-                        const option = document.createElement("option");
-                        option.value = opt;
-                        option.innerText = opt;
-                        input.appendChild(option);
-                    });
-                } else if (config.type === "boolean") {
-                    input = document.createElement("select");
-                    input.innerHTML = `
-                        <option value="none"></option>
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    `;
-                } else {
-                    input = document.createElement("input");
-                    input.type = "text";
-                }
-
-                input.id = key;
-                input.name = key;
-                if (config.required) input.required = true;
-
-                formContainer.appendChild(label);
-                formContainer.appendChild(document.createElement("br"));
-                formContainer.appendChild(input);
-                formContainer.appendChild(document.createElement("br"));
-                formContainer.appendChild(document.createElement("br"));
-            }
+            window.PreferenceUtils.buildForm(formContainer, schema);
             submitInput.style.display = "block";
         } catch (err) {
-            error.innerText = "Error loading configuration from backend.";
-            console.error(err);
+            formContainer.innerHTML = `<p style='color:red;'>Error: ${err.message}</p>`;
         }
     }
 
@@ -87,57 +29,13 @@
 
         const formData = {};
         for (const key of Object.keys(schema)) {
-            const element = document.getElementById(key);
-            let value = element.value;
-
-            if (value === "none" || value === "") {
-                error.innerText = `Please fill out all required fields.`;
-                return false;
-            }
-            formData[key] = value;
+            formData[key] = document.getElementById(key).value;
         }
 
-        // --- DYNAMIC BUSINESS LOGIC ---
-        // Find the selected dorm, gender, and room type by checking values against dorms.json
-        let selectedDormName = null;
-        let selectedGender = null;
-        let selectedRoomType = null;
-
-        for (const key in formData) {
-            const val = formData[key];
-            if (dorms[val]) selectedDormName = val;
-            
-            if (schema[key] && schema[key].options) {
-                if (schema[key].options.includes("Man") || schema[key].options.includes("Woman")) selectedGender = val;
-                if (schema[key].options.includes("Single") || schema[key].options.includes("Double")) selectedRoomType = val;
-            }
-        }
-
-        if (selectedDormName && selectedGender) {
-            const dormData = dorms[selectedDormName];
-            if (dormData.allowed_genders && !dormData.allowed_genders.includes(selectedGender)) {
-                error.innerText = `${selectedDormName} does not allow ${selectedGender}`;
-                return false;
-            }
-            if (selectedRoomType === "Single" && !dormData.has_singles_rooms) {
-                error.innerText = `${selectedDormName} does not have single rooms`;
-                return false;
-            }
-            if (selectedRoomType === "Double" && !dormData.has_doubles_rooms) {
-                error.innerText = `${selectedDormName} does not have double rooms`;
-                return false;
-            }
-        }
-
-        // Dynamic Age/Alcohol check
-        let ageVal = null;
-        let alcoholVal = null;
-        for (const key in schema) {
-            if (schema[key].options && schema[key].options.includes("<=18")) ageVal = formData[key];
-            if (schema[key].type === "boolean" && schema[key].label.toLowerCase().includes("alcohol")) alcoholVal = formData[key];
-        }
-        if ((ageVal === "<=18" || ageVal === "19-20") && alcoholVal === "true") {
-            error.innerText = "Alcohol preference must be set to No if under 21.";
+        // Call our shared validation function
+        const validationError = window.PreferenceUtils.validate(formData, schema, dorms, rules);
+        if (validationError) {
+            error.innerText = validationError;
             return false;
         }
 

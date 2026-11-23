@@ -1,107 +1,34 @@
 (() => {
-const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
-const API_BASE = isLocal && window.location.port !== "8080"
-    ? `http://${window.location.hostname}:8080`
-    : "";
+    const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+    const API_BASE = isLocal && window.location.port !== "8080"
+        ? `http://${window.location.hostname}:8080` : "";
+
     const formContainer = document.getElementById("preference-form-container");
     const submitInput = document.getElementById("submit");
     const error = document.getElementById("error");
     
-    //Fetches the saved preferences information from the backend and displays it
-    //The user preferences are added to the dropdown as the default option
-    //Returns an error if either the preference options or the user data can't be found
-
-    let schema = {};
-    let dorms = {};
-    let preferences = {};
+    let schema = {}, dorms = {}, rules = {};
 
     async function initForm() {
         try {
-            // Fetch the json data for the preference options and the user's saved preferences
-            const [schemaRes, dormsRes, preferencesRes] = await Promise.all([
-                fetch(`${API_BASE}/api/config`),
-                fetch(`${API_BASE}/api/dorms`),
+            // Fetch configs and user's preferences at the same time
+            const [configs, prefRes] = await Promise.all([
+                window.PreferenceUtils.fetchConfigs(API_BASE),
                 fetch(`${API_BASE}/api/getPreferences`, { credentials: "include" })
             ]);
             
-            if (!schemaRes.ok) {
-                const errorCheck = await schemaRes.json();
-                error.innerText = errorCheck.message || "Failed to load preferences information";
-                return;
-            }
+            if (!prefRes.ok) throw new Error("Failed to find any saved preferences");
 
-            if (!dormsRes.ok) {
-                const errorCheck = await dormsRes.json();
-                error.innerText = errorCheck.message || "Failed to load dorm information"
-                return;
-            }
+            schema = configs.schema;
+            dorms = configs.dorms;
+            rules = configs.rules;
+            const prefData = await prefRes.json();
 
-            if (!preferencesRes.ok) {
-                const errorCheck = await preferencesRes.json();
-                error.innerText = errorCheck.message || "Failed to find any saved preferences";
-                return;
-            }
-            
-            //Loads the information into the option dropdowns
-            //Dynamic, so options can be changed later on
-            schema = await schemaRes.json();
-            dorms = await dormsRes.json();
-            preferences = await preferencesRes.json();
-            formContainer.innerHTML = ""; 
-
-            for (const [key, config] of Object.entries(schema)) {
-                const label = document.createElement("label");
-                label.htmlFor = key;
-                label.innerText = config.label + ":";
-                
-                let input;
-                if (config.type === "select") {
-                    input = document.createElement("select");
-                    const defaultOption = document.createElement("option");
-                    defaultOption.value = "none";
-                    defaultOption.innerText = "";
-                    input.appendChild(defaultOption);
-
-                    config.options.forEach(opt => {
-                        const option = document.createElement("option");
-                        option.value = opt;
-                        option.innerText = opt;
-                        input.appendChild(option);
-                    });
-                } else if (config.type === "boolean") {
-                    input = document.createElement("select");
-                    input.innerHTML = `
-                        <option value="none"></option>
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
-                    `;
-                } else {
-                    input = document.createElement("input");
-                    input.type = "text";
-                }
-
-                input.id = key;
-                input.name = key;
-                if (config.required) input.required = true;
-                if (preferences.preferences[key] != null) {
-                    input.value = String(preferences.preferences[key]);
-                }
-                else {
-                    error.innerText = "Some preferences could not be found";
-                    return;
-                }
-
-                formContainer.appendChild(label);
-                formContainer.appendChild(document.createElement("br"));
-                formContainer.appendChild(input);
-                formContainer.appendChild(document.createElement("br"));
-                formContainer.appendChild(document.createElement("br"));
-            }
-
+            // Pass the saved preferences to the builder so it pre-selects the dropdowns
+            window.PreferenceUtils.buildForm(formContainer, schema, prefData.preferences);
             submitInput.style.display = "block";
         } catch (err) {
-            error.innerText = "Error loading configuration from backend.";
-            console.error(err);
+            formContainer.innerHTML = `<p style='color:red;'>Error: ${err.message}</p>`;
         }
     }
 
@@ -111,57 +38,13 @@ const API_BASE = isLocal && window.location.port !== "8080"
 
         const formData = {};
         for (const key of Object.keys(schema)) {
-            const element = document.getElementById(key);
-            let value = element.value;
-
-            if (value === "none" || value === "") {
-                error.innerText = `Please fill out all required fields.`;
-                return false;
-            }
-            formData[key] = value;
+            formData[key] = document.getElementById(key).value;
         }
 
-        // --- DYNAMIC BUSINESS LOGIC ---
-        // Find the selected dorm, gender, and room type by checking values against dorms.json
-        let selectedDormName = null;
-        let selectedGender = null;
-        let selectedRoomType = null;
-
-        for (const key in formData) {
-            const val = formData[key];
-            if (dorms[val]) selectedDormName = val;
-            
-            if (schema[key] && schema[key].options) {
-                if (schema[key].options.includes("Man") || schema[key].options.includes("Woman")) selectedGender = val;
-                if (schema[key].options.includes("Single") || schema[key].options.includes("Double")) selectedRoomType = val;
-            }
-        }
-
-        if (selectedDormName && selectedGender) {
-            const dormData = dorms[selectedDormName];
-            if (dormData.allowed_genders && !dormData.allowed_genders.includes(selectedGender)) {
-                error.innerText = `${selectedDormName} does not allow ${selectedGender}`;
-                return false;
-            }
-            if (selectedRoomType === "Single" && !dormData.has_singles_rooms) {
-                error.innerText = `${selectedDormName} does not have single rooms`;
-                return false;
-            }
-            if (selectedRoomType === "Double" && !dormData.has_doubles_rooms) {
-                error.innerText = `${selectedDormName} does not have double rooms`;
-                return false;
-            }
-        }
-
-        // Dynamic Age/Alcohol check
-        let ageVal = null;
-        let alcoholVal = null;
-        for (const key in schema) {
-            if (schema[key].options && schema[key].options.includes("<=18")) ageVal = formData[key];
-            if (schema[key].type === "boolean" && schema[key].label.toLowerCase().includes("alcohol")) alcoholVal = formData[key];
-        }
-        if ((ageVal === "<=18" || ageVal === "19-20") && alcoholVal === "true") {
-            error.innerText = "Alcohol preference must be set to No if under 21.";
+        // Call our shared validation function
+        const validationError = window.PreferenceUtils.validate(formData, schema, dorms, rules);
+        if (validationError) {
+            error.innerText = validationError;
             return false;
         }
 

@@ -1,37 +1,25 @@
 {
     "Regents": {
-        "allowed_genders": ["Woman"],
-        "has_doubles_rooms": true,
-        "has_singles_rooms": true
+        "constraints": {
+            "gender": ["Woman"]
+        }
     },
     "Stimson": {
-        "allowed_genders": ["Man"],
-        "has_doubles_rooms": true,
-        "has_singles_rooms": true
+        "constraints": {
+            "gender": ["Man"]
+        }
     },
     "Rogers": {
-        "allowed_genders": ["Man", "Woman", "Non-Binary"],
-        "has_doubles_rooms": true,
-        "has_singles_rooms": false
+        "constraints": {
+            "room_type": ["Double"]
+        }
     },
     "McEachern": {
-        "allowed_genders": ["Man", "Woman", "Non-Binary"],
-        "has_doubles_rooms": false,
-        "has_singles_rooms": true
+        "constraints": {
+            "room_type": ["Single"]
+        }
     },
-    "McCrosky": {
-        "allowed_genders": ["Man", "Woman", "Non-Binary"],
-        "has_doubles_rooms": true,
-        "has_singles_rooms": true
-    },
-    "Streit Perham": {
-        "allowed_genders": ["Man", "Woman", "Non-Binary"],
-        "has_doubles_rooms": true,
-        "has_singles_rooms": true
-    },
-    "Orton": {
-        "allowed_genders": ["Man", "Woman", "Non-Binary"],
-        "has_doubles_rooms": true,
-        "has_singles_rooms": true
-    }
+    "McCrosky": {},
+    "Streit Perham": {},
+    "Orton": {}
 }
