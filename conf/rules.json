@@ -6,6 +6,6 @@
         "then": {
             "alcohol_preference": ["false"]
         },
-        "error": "Alcohol preference must be set to 'No' if you are under 21."
+        "error": "You cannot prefer to be in a room with someone who drinks alcohol if you are under 21."
     }
 ]
