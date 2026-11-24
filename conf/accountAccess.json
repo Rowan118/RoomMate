@@ -1,0 +1,14 @@
+{
+    "preferences": {
+        "account": "student"
+    },
+    "room": {
+        "account": "student"
+    },
+    "floor": {
+        "account": "RA"
+    },
+    "system": {
+        "account": "admin"
+    }
+}

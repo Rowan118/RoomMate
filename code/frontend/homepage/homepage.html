@@ -11,21 +11,18 @@
     <p>User: <span id="sessionMessage"></span></p>
     <script src="../session/loadSession.js"></script>
 
-    <button onclick="window.location.href='/preferences/add_preferences.html'">Add preferences</button>
+    <button id = "button" value = "preferences">Add or change preferences</button>
     <br><br>
 
-    <button onclick="window.location.href='/preferences/modify_preferences.html'">View preferences</button>
-    <br><br>
-
-    <button onclick="window.location.href='view_assignment.html'">View room assignment</button>
+    <button id = "button" value = "room">View room assignment</button>
     <br><br>
 
     <!-- Restricted to RA only -->
-    <button onclick="window.location.href='/roommate/view_floor.html'">View floor info</button>
+    <button id = "button" value = "floor">View floor info</button>
     <br><br>
 
     <!-- Restricted to admin only -->
-    <button onclick="window.location.href='/system/view_info'">View system info</button>
+    <button id = "button" value = "system">View system info</button>
     <br><br>
 
     <button type="button" id="logout">Log out</button>

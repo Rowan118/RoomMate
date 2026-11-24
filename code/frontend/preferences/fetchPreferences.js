@@ -38,7 +38,7 @@
 
             if (!preferencesRes.ok) {
                 const errorCheck = await preferencesRes.json();
-                error.innerText = errorCheck.message || "Failed to find any saved preferences";
+                window.location.href = "add_preferences.html";
                 return;
             }
             
