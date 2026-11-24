@@ -1,8 +1,8 @@
 package com.roommate.Handlers;
 
 import com.google.gson.JsonObject;
-import com.roommate.SessionStore;
-import com.roommate.UserDao;
+import com.roommate.Services.SessionStore;
+import com.roommate.Services.UserDao;
 import com.sun.net.httpserver.HttpExchange;
 
 /**
@@ -47,7 +47,7 @@ final class LoginHandler implements ApiEndpoint {
         }
 
         sessions.removeSession(ApiRouter.readCookie(exchange, "sessionId"));
-        String sessionId = sessions.createSession(email);
+        String sessionId = sessions.createSession(users, email);
         exchange.getResponseHeaders().add(
             "Set-Cookie",
             "sessionId=" + sessionId + "; Path=/; HttpOnly; SameSite=Lax"

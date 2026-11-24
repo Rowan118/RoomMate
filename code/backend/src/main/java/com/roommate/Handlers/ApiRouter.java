@@ -13,9 +13,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.roommate.SessionStore;
-import com.roommate.UserDao;
 import com.roommate.Services.PreferencesService;
+import com.roommate.Services.SessionStore;
+import com.roommate.Services.UserDao;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -51,7 +51,9 @@ public class ApiRouter implements HttpHandler {
             new ModifyPreferencesHandler(users, sessions, preferencesService),
             new GetPreferencesHandler(users, sessions, preferencesService),
             new ConfigHandler("preferences.json", "/api/config"),
-            new ConfigHandler("dorms.json", "/api/dorms")
+            new ConfigHandler("dorms.json", "/api/dorms"),
+            new ConfigHandler("rules.json", "/api/rules"),
+            new GetAccountTypeHandler(users, sessions)
         );
 
         for (ApiEndpoint handler : handlerList) {

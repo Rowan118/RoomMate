@@ -1,6 +1,6 @@
 package com.roommate.Handlers;
 
-import com.roommate.SessionStore;
+import com.roommate.Services.SessionStore;
 import com.sun.net.httpserver.HttpExchange;
 
 /**

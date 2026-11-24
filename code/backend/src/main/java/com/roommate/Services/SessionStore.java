@@ -1,4 +1,4 @@
-package com.roommate;
+package com.roommate.Services;
 
 import java.util.Map;
 import java.util.UUID;
@@ -7,6 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 
  * SessionStore
+ * Manage user sessions.
+ * When users log in, they get a session.
+ * SessionStore manages basic session management.
  */
 public class SessionStore {
     private final Map<String, String> sessions = new ConcurrentHashMap<>();
@@ -16,7 +19,7 @@ public class SessionStore {
      * @param email User's e-mail address.
      * @return The session ID String.
      */
-    public String createSession(String email) {
+    public String createSession(UserDao users, String email) {
         String sessionId = UUID.randomUUID().toString();
         sessions.put(sessionId, email);
         return sessionId;
@@ -28,9 +31,7 @@ public class SessionStore {
      * @return The full user e-mail address.
      */
     public String getEmail(String sessionId) {
-        if (sessionId == null || sessionId.isBlank()) {
-            return null;
-        }
+        if (sessionId == null || sessionId.isBlank()) return null;
         return sessions.get(sessionId);
     }
 

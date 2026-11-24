@@ -4,15 +4,19 @@ The Git repo provides WSU Pullman examples.
 
 # Purposes
 ## dorms.json
-Determines what dorms are available at your university.
+Determines what dorms are available at your university as well as constraints.
+A constraint is a preference that is specifically allowed for whichever dorm the constraint lives in. For example, for a dorm that is strictly for women, you'd add "gender" as a constraint and then add "Woman" as one of the constraints in a JSON array. Whatever preference options are not specified are disallowed and students signing up would get an error telling them that their preferences are incompatible with their chosen dorm.
 
 ### Example
 ```json
-"Regents": {
-        "allowed_genders": ["Woman"],
-        "has_doubles_rooms": true,
-        "has_singles_rooms": true
-    },
+{
+        "Regents": {
+                "constraints": {
+                        "gender": ["Woman"]
+                }
+        },
+        "Orton": {}
+}
 ```
 
 ## preferences.json
@@ -35,6 +39,25 @@ If the question is required to proceed, then set the "required" option to true, 
         "type": "text",
         "required": true
     },
+```
+
+## rules.json
+For any preferences that may conflict with each other or may vary depending on circumstances, they can be added in rules.json. For example, asking a student that's under the legal alcohol minimum drinking age if they would like to stay with a roommate who drinks alcohol can be restricted.
+Make an object field with `{}` and specify `"if": {},` and `"then": {},` and `"error":` to warn of conflicting options.
+
+### Example
+```json
+[
+    {
+        "if": {
+            "age": ["<=18", "19-20"]
+        },
+        "then": {
+            "alcohol_preference": ["false"]
+        },
+        "error": "You cannot prefer to be in a room with someone who drinks alcohol if you are under 21."
+    }
+]
 ```
 
 ## emailList.json 

@@ -12,10 +12,12 @@ import com.roommate.Databases.Database;
 import com.roommate.Databases.LoginDatabase;
 import com.roommate.Databases.PreferencesDatabase;
 import com.roommate.Handlers.ApiRouter;
+import com.roommate.Handlers.StaticFileHandler;
 import com.sun.net.httpserver.HttpServer;
-
 import com.roommate.Services.PasswordService;
 import com.roommate.Services.PreferencesService;
+import com.roommate.Services.SessionStore;
+import com.roommate.Services.UserDao;
 
 public class Main {
 
@@ -24,6 +26,7 @@ public class Main {
         String loginDbPath = System.getenv().getOrDefault("LOGIN_DB", "logins.db");
         String preferenceDbPath = System.getenv().getOrDefault("PREF_DB", "preferences.db");
         String configurationPath = System.getenv().getOrDefault("CONF_DIR", "configuration");
+        String staticDir = System.getenv().getOrDefault("STATIC_DIR", "../frontend");
 
         JsonObject preferencesSettings;
         try {
@@ -64,6 +67,7 @@ public class Main {
         SessionStore sessions = new SessionStore();
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/api", new ApiRouter(users, sessions, preferences));
+        server.createContext("/", new StaticFileHandler(staticDir));
 
         // Single-threaded: SQLite only allows one writer at a time
         server.setExecutor(Executors.newSingleThreadExecutor());

@@ -1,4 +1,4 @@
-package com.roommate;
+package com.roommate.Services;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,16 +6,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.roommate.Databases.Database;
-import com.roommate.Services.PasswordService;
 
-/** Create an abstraction between the user credentials database to separate database management from server logic*/
+/** Create an abstraction between the user credentials database to separate database management from server logic.
+ *  It's a service to manage login information by establishing a connection to the login database.
+ *  It has features for checking and getting account information as well as adding logins.
+*/
 public class UserDao {
 
     private final Database db;
     private final PasswordService passwords;
 
     /**
-     * Create a UserDao instance that abstracts the PasswordService and Database away.
+     * Create a UserDao instance that abstracts the PasswordService and login database away.
      * @param db Database object.
      * @param passwords PasswordService object.
      */
@@ -38,6 +40,26 @@ public class UserDao {
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
+        }
+    }
+
+    /**
+     * Get the account type of a user based on their e-mail address.
+     * @return Account type String. May return null if the e-mail address doesn't exist.
+     * @throws SQLException May throw an SQLException if the database unexpectedly fails.
+     */
+    public String getAccountTypeByEmail(String email) throws SQLException {
+        if (emailExists(email)) {
+            String sql = "SELECT account_type FROM users WHERE email = ?";
+            try (Connection conn = db.connect();
+                    PreparedStatement ps = conn.prepareStatement(sql)) {
+                        ps.setString(1, normalizeEmail(email));
+                        try (ResultSet rs = ps.executeQuery()) {
+                            return rs.next() ? rs.getString("account_type") : null;
+                        }
+                    }
+        } else {
+            return null;
         }
     }
 
